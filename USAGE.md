@@ -73,7 +73,7 @@ claim = Claim(
     proof_level=ProofLevel.S0,
     dependencies=[],
     test_description="Load test: 200 QPS for 5 minutes",
-    status="UNKNOWN"
+    status="À-CLÔTURER"
 )
 context.claim_ledger.add_claim(claim)
 
@@ -178,7 +178,7 @@ Every claim must be tagged:
 - **[USER]**: User-provided information
 - **[DED]**: Deduced from available information
 - **[HYP]**: Hypothesis - needs testing
-- **[UNKNOWN]**: Unknown - requires verification
+- **[GAP]**: Information gap - requires decision, test, and termination
 
 ### Testability Levels (T0-T3)
 
@@ -215,7 +215,7 @@ claim = Claim(
     proof_level=ProofLevel.S1,  # Reasoning
     dependencies=["C002"],  # Depends on other claims
     test_description="A/B test: measure DB load with/without cache",
-    status="UNKNOWN",
+    status="À-CLÔTURER",
     testability=TestabilityLevel.T3  # Reproducible test
 )
 
@@ -339,7 +339,7 @@ Always tag claims with origin:
 - `[USER]` for user-provided facts
 - `[DED]` for deduced information
 - `[HYP]` for assumptions that need testing
-- `[UNKNOWN]` when information is not available
+- `[GAP]` when information is not available (must include decision, test, impact)
 
 ### 3. Define Tests
 

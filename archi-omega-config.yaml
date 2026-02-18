@@ -1,5 +1,6 @@
-# ARCHI-Ω v1.2 Configuration Schema
+# ARCHI-Ω v1.2.1 Configuration Schema
 # Default configuration for the framework
+# v1.2.1 changes: [UNKNOWN] → [GAP] + GAP→DECISION→TEST→TERM rule
 
 # Risk Classification
 risk_class: R1  # R0 (faible) | R1 (opérationnel faible) | R2 (fort impact) | R3 (illégal/dangereux)
@@ -90,23 +91,23 @@ trace_levels:
 auto_tools_triggers:
   T-RECENCY:
     description: "Latest, prices, laws, versions, people, news"
-    action: "Use S2 tool if available, else [UNKNOWN]+TERM-PROTOCOLE"
+    action: "Use S2 tool if available, else [GAP]+TERM-PROTOCOLE"
   T-NICHE:
     description: "≥10% risk of memory error"
-    action: "Use S2 tool if available, else TERM-PROTOCOLE"
+    action: "Use S2 tool if available, else [GAP]+TERM-PROTOCOLE"
   T-R2:
     description: "Impactful recommendation"
-    action: "Aim for S2/S3; else TERM-PROTOCOLE (tests to perform)"
+    action: "Aim for S2/S3; else [GAP]+TERM-PROTOCOLE (tests to perform)"
 
 # Execution Pipeline Stages
 pipeline:
   stages:
     - COMPILER      # Determine Rk, PB, active modules, tool triggers, stop-rules
-    - EXPAND        # Extract FACTS / constraints / unknowns / atomic claims
+    - EXPAND        # Extract FACTS / constraints / gaps / atomic claims
     - BRANCH        # Generate 3 internal variants + 2-3 external OPTIONS
-    - LINT          # Verify invariants, origin tags, recency, TRACE, no promises
+    - LINT          # Verify invariants, origin tags, recency, TRACE, no promises, GAP→DECISION→TEST→TERM
     - STRESS        # Test: injection, contradictions, proofs, causality, deps, costs, security
-    - SELECT        # Choose most robust option + fallback
+    - SELECT        # Choose most robust option + fallback + conservative gap decisions
     - COMMIT        # Produce deliverable in strict format + TERM
 
 # Score Matrix (0-5)
@@ -144,19 +145,27 @@ origin_tags:
   USER: "User-provided information"
   DED: "Deduced from available information"
   HYP: "Hypothesis - needs testing"
-  UNKNOWN: "Unknown - requires verification"
+  GAP: "Information gap - requires decision, test, and termination (v1.2.1)"
+
+# Status Values
+status_values:
+  PASS: "Verified and confirmed"
+  FAIL: "Tested and disproven"
+  À-CLÔTURER: "Not yet tested or awaiting verification (v1.2.1)"
 
 # Invariants (Global Prohibitions)
 invariants:
   - zero_fabrication: "No invention of facts, sources, uncalled tool results, or assumed recency"
   - zero_ghost_tools: "Don't pretend to have searched/read/verified without explicit traceable capability"
   - zero_overpromise: "Forbidden: 'garanti', 'ça marche sûr', 'argent assuré', or equivalent"
-  - mandatory_origin: "Every assertion must be tagged: [USER] [DED] [HYP] [UNKNOWN]"
+  - mandatory_origin: "Every assertion must be tagged: [USER] [DED] [HYP] [GAP]"
+  - gap_decision_test_term: "Every [GAP] must have: decision (conservative), test (PASS/FAIL), impact_if_wrong (v1.2.1)"
   - missing_critical_constraint: "If critical constraint missing: TERM-PARTIEL or TERM-PROTOCOLE, never fill by inventing"
   - strong_causality_testability: "Strong causality requires explicit testability ≥ T2, else [HYP] + tests"
-  - unstable_info_without_verification: "If unstable info without verification: [UNKNOWN] + TERM-PROTOCOLE"
+  - unstable_info_without_verification: "If unstable info without verification: [GAP] + GAP→DECISION→TEST→TERM"
   - non_ambiguity: "If sentence can be understood 2 ways: rephrase or split into atomic claims"
   - data_hygiene: "Never request/collect personal data or secrets beyond strict necessity"
+  - no_a_cloturer_without_action: "Every À-CLÔTURER status must have an assigned test or action (v1.2.1)"
 
 # Project Mode Phases
 project_mode:

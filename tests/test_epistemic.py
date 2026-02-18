@@ -1,5 +1,5 @@
 """
-Tests for ARCHI-Ω v1.2 epistemic foundation
+Tests for ARCHI-Ω v1.2.1 epistemic foundation
 """
 
 import sys
@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from archi_omega.epistemic.foundation import (
     ProofLevel, RiskClass, TestabilityLevel, OriginTag,
-    Claim, ClaimLedger, RiskClassifier, ProofValidator, ProofBudget
+    Claim, ClaimLedger, Gap, GapLedger, RiskClassifier, ProofValidator, ProofBudget
 )
 
 
@@ -67,13 +67,13 @@ def test_claim_creation():
         proof_level=ProofLevel.S0,
         dependencies=[],
         test_description="Load test: 10K QPS for 5 min",
-        status="UNKNOWN",
+        status="À-CLÔTURER",
         testability=TestabilityLevel.T3
     )
     
     assert claim.claim_id == "C001"
     assert claim.origin_tag == OriginTag.USER
-    assert claim.status == "UNKNOWN"
+    assert claim.status == "À-CLÔTURER"
     
     print("✓ Claim creation test passed")
 
@@ -88,7 +88,7 @@ def test_strong_causality_validation():
         proof_level=ProofLevel.S1,
         dependencies=[],
         test_description="A/B test",
-        status="UNKNOWN",
+        status="À-CLÔTURER",
         testability=TestabilityLevel.T3
     )
     assert claim_good.validate_strong_causality() == True
@@ -101,7 +101,7 @@ def test_strong_causality_validation():
         proof_level=ProofLevel.S1,
         dependencies=[],
         test_description="Observation",
-        status="UNKNOWN",
+        status="À-CLÔTURER",
         testability=TestabilityLevel.T0
     )
     assert claim_bad.validate_strong_causality() == False
@@ -130,7 +130,7 @@ def test_claim_ledger():
         proof_level=ProofLevel.S1,
         dependencies=["C001"],
         test_description="Test 2",
-        status="UNKNOWN"
+        status="À-CLÔTURER"
     )
     
     ledger.add_claim(claim1)
@@ -142,7 +142,7 @@ def test_claim_ledger():
     stats = ledger.get_statistics()
     assert stats["total_claims"] == 2
     assert stats["by_status"]["PASS"] == 1
-    assert stats["by_status"]["UNKNOWN"] == 1
+    assert stats["by_status"]["À-CLÔTURER"] == 1
     
     print("✓ Claim ledger test passed")
 
@@ -194,9 +194,75 @@ def test_markdown_table_generation():
     print("✓ Markdown table generation test passed")
 
 
+def test_gap_creation():
+    """Test gap creation and validation (v1.2.1)"""
+    gap = Gap(
+        gap_id="G001",
+        description="Load requirements not specified",
+        decision="Assume 1K QPS as conservative default",
+        test="Verify actual load requirements with stakeholders",
+        impact_if_wrong="May under-provision infrastructure"
+    )
+    
+    assert gap.gap_id == "G001"
+    assert gap.validate() == True
+    assert gap.status == "À-CLÔTURER"
+    
+    # Test invalid gap (missing fields)
+    invalid_gap = Gap(
+        gap_id="G002",
+        description="Something",
+        decision="",
+        test="",
+        impact_if_wrong=""
+    )
+    assert invalid_gap.validate() == False
+    
+    print("✓ Gap creation test passed")
+
+
+def test_gap_ledger():
+    """Test gap ledger management (v1.2.1)"""
+    ledger = GapLedger()
+    
+    gap1 = Gap(
+        gap_id="G001",
+        description="Budget not specified",
+        decision="Proceed with cost optimization approach",
+        test="Clarify budget with finance team",
+        impact_if_wrong="May exceed budget constraints"
+    )
+    
+    gap2 = Gap(
+        gap_id="G002",
+        description="SLA requirements unclear",
+        decision="Target 99.9% availability",
+        test="Review SLA requirements with stakeholders",
+        impact_if_wrong="May not meet business needs",
+        status="PASS"
+    )
+    
+    ledger.add_gap(gap1)
+    ledger.add_gap(gap2)
+    
+    assert len(ledger.gaps) == 2
+    assert ledger.get_gap("G001") == gap1
+    
+    # Test validation
+    validation = ledger.validate_all()
+    assert validation["valid"] == True
+    
+    # Test markdown table
+    table = ledger.to_markdown_table()
+    assert "Gap-ID" in table
+    assert "G001" in table
+    
+    print("✓ Gap ledger test passed")
+
+
 def run_all_tests():
     """Run all tests"""
-    print("\n=== Running ARCHI-Ω Epistemic Foundation Tests ===\n")
+    print("\n=== Running ARCHI-Ω v1.2.1 Epistemic Foundation Tests ===\n")
     
     try:
         test_proof_levels()
@@ -208,6 +274,8 @@ def run_all_tests():
         test_claim_ledger()
         test_proof_validator()
         test_markdown_table_generation()
+        test_gap_creation()
+        test_gap_ledger()
         
         print("\n=== All tests passed! ✓ ===\n")
         return 0

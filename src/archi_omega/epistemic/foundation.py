@@ -1,12 +1,12 @@
 """
-ARCHI-Ω v1.2 - Epistemic Foundation
+ARCHI-Ω v1.2.1 - Epistemic Foundation
 
 This module implements the epistemic foundation of the ARCHI-Ω framework:
 - Proof levels (S0-S4)
 - Risk classes (R0-R3)
 - Proof budgets
 - Testability levels (T0-T3)
-- Origin tags
+- Origin tags (with GAP instead of UNKNOWN)
 """
 
 from enum import Enum
@@ -44,7 +44,7 @@ class OriginTag(Enum):
     USER = "USER"  # User-provided information
     DED = "DED"  # Deduced from available information
     HYP = "HYP"  # Hypothesis - needs testing
-    UNKNOWN = "UNKNOWN"  # Unknown - requires verification
+    GAP = "GAP"  # Information gap - requires decision, test, and termination
 
 
 @dataclass
@@ -94,6 +94,35 @@ class ProofBudget:
 
 
 @dataclass
+class Gap:
+    """
+    Represents an information gap with mandatory decision, test, and impact.
+    Enforces the GAP→DECISION→TEST→TERM rule from v1.2.1.
+    """
+    gap_id: str
+    description: str
+    decision: str  # Conservative decision/default choice
+    test: str  # How to close the gap (PASS/FAIL criteria)
+    impact_if_wrong: str  # Impact if the decision is incorrect
+    status: str = "À-CLÔTURER"  # Status: PASS, FAIL, or À-CLÔTURER
+    
+    def validate(self) -> bool:
+        """Validate that gap has all required fields"""
+        return bool(self.description and self.decision and self.test and self.impact_if_wrong)
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert gap to dictionary"""
+        return {
+            "gap_id": self.gap_id,
+            "description": self.description,
+            "decision": self.decision,
+            "test": self.test,
+            "impact_if_wrong": self.impact_if_wrong,
+            "status": self.status
+        }
+
+
+@dataclass
 class Claim:
     """Represents a claim with origin tag, proof level, and testability"""
     claim_id: str
@@ -102,7 +131,7 @@ class Claim:
     proof_level: ProofLevel
     dependencies: List[str]  # List of claim IDs this depends on
     test_description: str
-    status: str  # "PASS", "FAIL", "UNKNOWN"
+    status: str  # "PASS", "FAIL", "À-CLÔTURER"
     testability: TestabilityLevel = TestabilityLevel.T2
     
     def validate_strong_causality(self) -> bool:
@@ -188,9 +217,9 @@ class ProofValidator:
         }
         
         # Check origin tag
-        if claim.origin_tag == OriginTag.UNKNOWN and risk_class in [RiskClass.R2, RiskClass.R3]:
+        if claim.origin_tag == OriginTag.GAP and risk_class in [RiskClass.R2, RiskClass.R3]:
             results["issues"].append(
-                f"Claim {claim.claim_id} has UNKNOWN origin for high-risk ({risk_class.value})"
+                f"Claim {claim.claim_id} has GAP origin for high-risk ({risk_class.value}) - must apply GAP→DECISION→TEST→TERM"
             )
             results["valid"] = False
         
@@ -211,7 +240,7 @@ class ProofValidator:
                 )
         
         # Check hypothesis status
-        if claim.origin_tag == OriginTag.HYP and claim.status == "UNKNOWN":
+        if claim.origin_tag == OriginTag.HYP and claim.status == "À-CLÔTURER":
             results["warnings"].append(
                 f"Claim {claim.claim_id} is hypothesis but not yet tested"
             )
@@ -259,7 +288,7 @@ class ClaimLedger:
         """Get statistics about claims in the ledger"""
         total = len(self.claims)
         
-        by_status = {"PASS": 0, "FAIL": 0, "UNKNOWN": 0}
+        by_status = {"PASS": 0, "FAIL": 0, "À-CLÔTURER": 0}
         by_origin = {tag.value: 0 for tag in OriginTag}
         by_proof = {level.value: 0 for level in ProofLevel}
         
@@ -291,3 +320,63 @@ class ClaimLedger:
             )
         
         return "\n".join(lines)
+
+
+class GapLedger:
+    """Manages a ledger of gaps with mandatory GAP→DECISION→TEST→TERM rule"""
+    
+    def __init__(self):
+        self.gaps: Dict[str, Gap] = {}
+    
+    def add_gap(self, gap: Gap) -> None:
+        """Add a gap to the ledger"""
+        if not gap.validate():
+            raise ValueError(f"Gap {gap.gap_id} missing required fields (decision, test, or impact)")
+        self.gaps[gap.gap_id] = gap
+    
+    def get_gap(self, gap_id: str) -> Optional[Gap]:
+        """Get a gap by ID"""
+        return self.gaps.get(gap_id)
+    
+    def validate_all(self) -> Dict[str, Any]:
+        """Validate all gaps - ensure no gap has status À-CLÔTURER without action"""
+        results = {
+            "valid": True,
+            "issues": [],
+            "warnings": []
+        }
+        
+        for gap in self.gaps.values():
+            if not gap.validate():
+                results["valid"] = False
+                results["issues"].append(
+                    f"Gap {gap.gap_id} missing required fields"
+                )
+            
+            if gap.status == "À-CLÔTURER" and not gap.test:
+                results["valid"] = False
+                results["issues"].append(
+                    f"Gap {gap.gap_id} has status À-CLÔTURER but no test assigned"
+                )
+        
+        return results
+    
+    def to_markdown_table(self) -> str:
+        """Generate markdown table for gap ledger"""
+        if not self.gaps:
+            return "No gaps identified."
+        
+        lines = [
+            "| Gap-ID | Description | Decision (Conservative) | Test (PASS/FAIL) | Impact if Wrong | Status |",
+            "|--------|-------------|-------------------------|------------------|-----------------|--------|"
+        ]
+        
+        for gap in self.gaps.values():
+            lines.append(
+                f"| {gap.gap_id} | {gap.description[:40]}... | "
+                f"{gap.decision[:30]}... | {gap.test[:30]}... | "
+                f"{gap.impact_if_wrong[:30]}... | {gap.status} |"
+            )
+        
+        return "\n".join(lines)
+
