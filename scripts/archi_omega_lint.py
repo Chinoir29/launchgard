@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-ARCHI-Ω v1.2 - Fail-Closed Validation Script
+ARCHI-Ω v1.2.1 - Fail-Closed Validation Script
 
 This script performs fail-closed validation of the framework implementation:
 1. Checks for overpromise keywords (guarantee, 100%, etc.)
@@ -8,6 +8,7 @@ This script performs fail-closed validation of the framework implementation:
 3. Verifies testability requirements
 4. Ensures no fabricated facts/sources
 5. Validates proof budget compliance
+6. Enforces GAP→DECISION→TEST→TERM rule
 
 Exit code: 0 if all checks pass, 1 if any check fails
 """
@@ -110,7 +111,7 @@ class FailClosedValidator:
                 return False
             
             # Verify OriginTag enum exists with correct values
-            required_tags = {'USER', 'DED', 'HYP', 'UNKNOWN'}
+            required_tags = {'USER', 'DED', 'HYP', 'GAP'}
             actual_tags = {tag.name for tag in OriginTag}
             
             if not required_tags.issubset(actual_tags):
@@ -147,7 +148,7 @@ class FailClosedValidator:
                 proof_level=ProofLevel.S1,
                 dependencies=[],
                 test_description="Test",
-                status="UNKNOWN",
+                status="À-CLÔTURER",
                 testability=TestabilityLevel.T0
             )
             

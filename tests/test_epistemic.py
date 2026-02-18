@@ -1,5 +1,5 @@
 """
-Tests for ARCHI-Ω v1.2 epistemic foundation
+Tests for ARCHI-Ω v1.2.1 epistemic foundation
 """
 
 import sys
@@ -67,13 +67,13 @@ def test_claim_creation():
         proof_level=ProofLevel.S0,
         dependencies=[],
         test_description="Load test: 10K QPS for 5 min",
-        status="UNKNOWN",
+        status="À-CLÔTURER",
         testability=TestabilityLevel.T3
     )
     
     assert claim.claim_id == "C001"
     assert claim.origin_tag == OriginTag.USER
-    assert claim.status == "UNKNOWN"
+    assert claim.status == "À-CLÔTURER"
     
     print("✓ Claim creation test passed")
 
@@ -88,7 +88,7 @@ def test_strong_causality_validation():
         proof_level=ProofLevel.S1,
         dependencies=[],
         test_description="A/B test",
-        status="UNKNOWN",
+        status="À-CLÔTURER",
         testability=TestabilityLevel.T3
     )
     assert claim_good.validate_strong_causality() == True
@@ -101,7 +101,7 @@ def test_strong_causality_validation():
         proof_level=ProofLevel.S1,
         dependencies=[],
         test_description="Observation",
-        status="UNKNOWN",
+        status="À-CLÔTURER",
         testability=TestabilityLevel.T0
     )
     assert claim_bad.validate_strong_causality() == False
@@ -130,7 +130,7 @@ def test_claim_ledger():
         proof_level=ProofLevel.S1,
         dependencies=["C001"],
         test_description="Test 2",
-        status="UNKNOWN"
+        status="À-CLÔTURER"
     )
     
     ledger.add_claim(claim1)
@@ -142,7 +142,7 @@ def test_claim_ledger():
     stats = ledger.get_statistics()
     assert stats["total_claims"] == 2
     assert stats["by_status"]["PASS"] == 1
-    assert stats["by_status"]["UNKNOWN"] == 1
+    assert stats["by_status"]["À-CLÔTURER"] == 1
     
     print("✓ Claim ledger test passed")
 
