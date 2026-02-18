@@ -1,4 +1,4 @@
-# ARCHI-Ω v1.2 - Quick Reference
+# ARCHI-Ω v1.2.1 - Quick Reference
 
 A one-page cheat sheet for the ARCHI-Ω framework.
 
@@ -25,14 +25,14 @@ A one-page cheat sheet for the ARCHI-Ω framework.
 | R2 | fort impact | ≥2 pillars (S2/S4) + alternatives |
 | R3 | illégal/dangereux | STOP |
 
-## Origin Tags
+## Origin Tags (v1.2.1)
 
 | Tag | Meaning | Use When |
 |-----|---------|----------|
 | [USER] | User-provided | Direct from user input |
 | [DED] | Deduced | Derived from reasoning |
 | [HYP] | Hypothesis | Assumption needing test |
-| [UNKNOWN] | Unknown | Requires verification |
+| [GAP] | Information gap | Requires decision, test, impact (v1.2.1) |
 
 ## Testability Levels (T0-T3)
 
@@ -47,7 +47,7 @@ A one-page cheat sheet for the ARCHI-Ω framework.
 
 ```
 COMPILER  → Risk, proof budget, modules, triggers
-EXPAND    → Facts, constraints, unknowns, claims
+EXPAND    → Facts, constraints, gaps, claims
 BRANCH    → 2-3 alternative options
 LINT      → Verify invariants, tags, testability
 STRESS    → Test contradictions, proofs, security
@@ -121,7 +121,7 @@ claim = Claim(
     proof_level=ProofLevel.S0,
     dependencies=[],
     test_description="Load test",
-    status="UNKNOWN"
+    status="À-CLÔTURER"
 )
 context.claim_ledger.add_claim(claim)
 
@@ -130,21 +130,22 @@ pipeline = Pipeline()
 result = pipeline.execute(context)
 ```
 
-## Output Structure (12 Sections)
+## Output Structure (13 Sections - v1.2.1)
 
 0. FACTS [USER]
 1. OPEN QUESTIONS (P0→P2)
 2. ASSUMPTIONS [HYP]
-3. OPTIONS + SCORES
-4. RECOMMANDATION + SENSITIVITY MAP
-5. ARCHITECTURE CIBLE
-6. SÉCURITÉ & CONFORMITÉ
-7. IA/ML (if applicable)
-8. ADR (Decision Records)
-9. PLAN DE VÉRIFICATION + R-SUITE
-10. RISKS REGISTER
-11. RAPPORT DE REVUE + CLAIM LEDGER
-12. PROCHAIN PAS + TERM + RUNBOOK
+3. **GAPS [GAP]** (mandatory v1.2.1)
+4. OPTIONS + SCORES
+5. RECOMMANDATION + SENSITIVITY MAP
+6. ARCHITECTURE CIBLE
+7. SÉCURITÉ & CONFORMITÉ
+8. IA/ML (if applicable)
+9. ADR (Decision Records)
+10. PLAN DE VÉRIFICATION + R-SUITE
+11. RISKS REGISTER
+12. RAPPORT DE REVUE + CLAIM LEDGER
+13. PROCHAIN PAS + TERM + RUNBOOK
 
 ## Score Matrix (0-5)
 
@@ -167,18 +168,18 @@ result = pipeline.execute(context)
 - Test method
 - Impact if different
 
-## Claim Validation Rules
+## Claim Validation Rules (v1.2.1)
 
 - ✅ [USER] claims: must have source
 - ✅ [HYP] claims: must have test
-- ✅ [UNKNOWN] + critical → TERM-PROTOCOLE
+- ✅ **[GAP] → GAP→DECISION→TEST→TERM** (mandatory v1.2.1)
 - ✅ Strong causality → TRACE ≥ T2
 - ✅ R2 claims → proof ≥ S2
 
-## Auto-Tools Triggers
+## Auto-Tools Triggers (v1.2.1)
 
-- **T-RECENCY**: "latest", prices, laws, versions → use S2 tool or [UNKNOWN]
-- **T-NICHE**: ≥10% error risk → use S2 tool or TERM-PROTOCOLE
+- **T-RECENCY**: "latest", prices, laws, versions → use S2 tool or [GAP]
+- **T-NICHE**: ≥10% error risk → use S2 tool or [GAP]
 - **T-R2**: High impact → aim for S2/S3
 
 ## Common Patterns

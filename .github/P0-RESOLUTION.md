@@ -65,7 +65,7 @@ hexdump -C .gitignore | head -20  # All readable ASCII
 
 **Checks Performed:**
 1. ✓ Overpromise keywords (guarantee, 100%, etc.)
-2. ✓ Claim origin tags ([USER]/[DED]/[HYP]/[UNKNOWN])
+2. ✓ Claim origin tags ([USER]/[DED]/[HYP]/[GAP])
 3. ✓ Testability enforcement (strong causality ≥ T2)
 4. ✓ Risk classification (R2 requires ≥2 pillars)
 5. ✓ Fail-closed pipeline (termination codes)
