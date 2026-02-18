@@ -1,0 +1,41 @@
+name: 'LaunchGuard'
+description: 'Deterministic quality gate for docs - enforces claim tagging, blocks overpromises, detects secrets'
+author: 'Chinoir29'
+
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  mode:
+    description: 'Scan mode: light or max'
+    required: false
+    default: 'light'
+  files:
+    description: 'Files or patterns to scan (space-separated)'
+    required: false
+    default: '**/*.md **/*.yml **/*.yaml'
+  baseline:
+    description: 'Path to baseline file'
+    required: false
+  create-baseline:
+    description: 'Create baseline file at this path'
+    required: false
+  fail-on-warnings:
+    description: 'Fail the action if warnings are found'
+    required: false
+    default: 'false'
+
+outputs:
+  passed:
+    description: 'Whether the scan passed (no errors)'
+  errors:
+    description: 'Number of errors found'
+  warnings:
+    description: 'Number of warnings found'
+  report-path:
+    description: 'Path to the generated report files'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

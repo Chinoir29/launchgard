@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LaunchGuard Scan Report",
+  "type": "object",
+  "required": ["timestamp", "mode", "filesScanned", "violations", "claimLedger", "summary"],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the scan was performed"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["light", "max"],
+      "description": "Scan mode used"
+    },
+    "filesScanned": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of files scanned"
+    },
+    "violations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/violation"
+      },
+      "description": "List of detected violations"
+    },
+    "claimLedger": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/claimLedgerEntry"
+      },
+      "description": "Ledger of all claims found in the scanned files"
+    },
+    "summary": {
+      "type": "object",
+      "required": ["errors", "warnings", "passed"],
+      "properties": {
+        "errors": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of errors"
+        },
+        "warnings": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of warnings"
+        },
+        "passed": {
+          "type": "boolean",
+          "description": "Whether the scan passed (no errors)"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "violation": {
+      "type": "object",
+      "required": ["file", "line", "column", "ruleId", "severity", "message"],
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "Path to the file containing the violation"
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Line number where the violation occurs"
+        },
+        "column": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Column number where the violation occurs"
+        },
+        "ruleId": {
+          "type": "string",
+          "description": "Identifier of the rule that detected this violation"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["error", "warning"],
+          "description": "Severity level of the violation"
+        },
+        "message": {
+          "type": "string",
+          "description": "Description of the violation"
+        },
+        "context": {
+          "type": "string",
+          "description": "Optional context showing the violating text"
+        }
+      }
+    },
+    "claimLedgerEntry": {
+      "type": "object",
+      "required": ["claim", "tag", "file", "line", "needsSource"],
+      "properties": {
+        "claim": {
+          "type": "string",
+          "description": "The claim text"
+        },
+        "tag": {
+          "type": "string",
+          "enum": ["USER", "DED", "HYP", "UNKNOWN"],
+          "description": "The claim tag"
+        },
+        "file": {
+          "type": "string",
+          "description": "File where the claim appears"
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Line number of the claim"
+        },
+        "needsSource": {
+          "type": "boolean",
+          "description": "Whether this claim needs a source citation"
+        }
+      }
+    }
+  }
+}
