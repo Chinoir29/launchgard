@@ -1,0 +1,54 @@
+GOAL: "Build a REST API for task management to improve team productivity"
+
+DELIVERABLE: "Architecture document with deployment plan"
+
+USERS_LOAD:
+  users: 1000
+  qps_average: 50
+  qps_peak: 200
+  data_volume: "100k tasks/year"
+  latency: "<200ms p95"
+
+SLA_SLO:
+  availability: "99.5%"
+  latency: "p95 < 200ms"
+  rpo: "1 hour"
+  rto: "2 hours"
+
+DATA:
+  types: "Task metadata, user info, attachments"
+  sensitivity: "Internal (no PII)"
+  residency: "EU preferred"
+  retention: "2 years"
+
+CONSTRAINTS:
+  budget: "$500/month"
+  timeline: "3 months"
+  stack: "Node.js preferred"
+  cloud: "AWS"
+  regulation: "GDPR compliance"
+
+INTEGRATIONS:
+  - "SAML SSO"
+  - "Email notifications (SendGrid)"
+  - "Slack webhooks"
+
+OPS:
+  ci_cd: "GitHub Actions"
+  monitoring: "CloudWatch"
+  support: "Business hours"
+
+SECURITY:
+  threats: "Standard web app threats"
+  requirements: "Corporate security review"
+
+DONE:
+  pass:
+    - "API responds <200ms p95"
+    - "99.5% uptime over 30 days"
+    - "Passes security review"
+    - "Costs <$500/month"
+  fail:
+    - "Any data loss"
+    - "Security critical vulnerability"
+    - "Budget overrun >20%"
