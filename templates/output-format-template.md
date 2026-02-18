@@ -627,13 +627,13 @@ Low     |  L  |  L  |  M  |
 
 | Claim-ID | Claim Text | Origin Tag | S-Level | Dependencies | Test | Status |
 |----------|------------|------------|---------|--------------|------|--------|
-| C001 | [Claim] | [USER/DED/HYP/UNKNOWN] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/À-CLÔTURER |
-| C002 | [Claim] | [USER/DED/HYP/UNKNOWN] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/À-CLÔTURER |
-| C003 | [Claim] | [USER/DED/HYP/UNKNOWN] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/À-CLÔTURER |
+| C001 | [Claim] | [USER/DED/HYP/GAP] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/À-CLÔTURER |
+| C002 | [Claim] | [USER/DED/HYP/GAP] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/À-CLÔTURER |
+| C003 | [Claim] | [USER/DED/HYP/GAP] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/À-CLÔTURER |
 
 **Summary:**
 - Total Claims: X
-- By Status: PASS: X, FAIL: Y, UNKNOWN: Z
+- By Status: PASS: X, FAIL: Y, À-CLÔTURER: Z
 - By Origin: [USER]: W, [DED]: X, [HYP]: Y, [GAP]: Z
 - By S-Level: S0: A, S1: B, S2: C, S3: D, S4: E
 
