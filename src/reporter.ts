@@ -41,7 +41,10 @@ export class Reporter {
 
       for (const claim of report.claimLedger) {
         const needsSource = claim.needsSource ? '⚠️ Yes' : 'No';
-        const claimText = claim.claim.replace(/\|/g, '\\|').substring(0, 80);
+        const claimText = claim.claim
+          .replace(/\\/g, '\\\\')
+          .replace(/\|/g, '\\|')
+          .substring(0, 80);
         output += `| ${claim.file} | ${claim.line} | ${claim.tag} | ${needsSource} | ${claimText} |\n`;
       }
       output += '\n';
