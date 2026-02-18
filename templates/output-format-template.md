@@ -651,11 +651,11 @@ Low     |  L  |  L  |  M  |
 **Summary:**
 - Total Claims: X
 - By Status: PASS: X, FAIL: Y, À-CLÔTURER: Z
-- By Origin: [USER]: W, [DED]: X, [HYP]: Y, [À-CLÔTURER]: Z
+- By Origin: [USER]: W, [DED]: X, [HYP]: Y, [GAP]: Z
 - By S-Level: S0: A, S1: B, S2: C, S3: D, S4: E
 
 **Critical Open Items:**
-1. [Any critical À-CLÔTURER or FAIL claims]
+1. [Any critical GAP or FAIL claims]
 
 ---
 
