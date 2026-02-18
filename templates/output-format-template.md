@@ -1,4 +1,4 @@
-# ARCHI-Ω v1.2 - Output Format Template
+# ARCHI-Ω v1.2.1 - Output Format Template
 
 **Project:** [Project Name]
 **Date:** YYYY-MM-DD
@@ -46,7 +46,24 @@
 
 ---
 
-## 3) OPTIONS (2–3) + SCORE (0–5) + TRADE-OFFS
+## 3) GAPS [GAP] (obligatoire v1.2.1)
+
+**Information gaps identified (each with GAP→DECISION→TEST→TERM):**
+
+| Gap-ID | Description | Decision (Conservative) | Test (PASS/FAIL) | Impact if Wrong | Status |
+|--------|-------------|-------------------------|------------------|-----------------|--------|
+| G001 | [Gap description] | [Conservative default decision] | [How to close gap - PASS if...] | [Impact if decision is wrong] | À-CLÔTURER |
+| G002 | [Gap description] | [Conservative default decision] | [How to close gap - PASS if...] | [Impact if decision is wrong] | À-CLÔTURER |
+
+**Key GAP→DECISION→TEST→TERM rules:**
+- Every gap must have a conservative decision
+- Every gap must have a test to close it
+- Every gap must document impact if wrong
+- No gap can be "the end" - must have resolution path
+
+---
+
+## 4) OPTIONS (2–3) + SCORE (0–5) + TRADE-OFFS
 
 ### Option 1: [Name]
 
@@ -94,7 +111,7 @@
 
 ---
 
-## 4) RECOMMANDATION + RATIONNEL (sous contraintes)
+## 5) RECOMMANDATION + RATIONNEL (sous contraintes)
 
 ### Recommended Option: [Option X]
 
@@ -125,7 +142,7 @@
 
 ---
 
-## 5) ARCHITECTURE CIBLE (A→I)
+## 6) ARCHITECTURE CIBLE (A→I)
 
 ### A) Executive Brief (≤10 lignes)
 
@@ -298,7 +315,7 @@
 
 ---
 
-## 6) SÉCURITÉ & CONFORMITÉ
+## 7) SÉCURITÉ & CONFORMITÉ
 
 ### Threat Model
 
@@ -378,7 +395,7 @@
 
 ---
 
-## 7) IA/ML (si applicable)
+## 8) IA/ML (si applicable)
 
 ### Approche
 
@@ -483,7 +500,7 @@ Collecte → Qualité → Features → Train → Eval → Deploy
 
 ---
 
-## 8) ADR (DECISION RECORDS)
+## 9) ADR (DECISION RECORDS)
 
 ### ADR-001: [Title]
 
@@ -505,7 +522,7 @@ Collecte → Qualité → Features → Train → Eval → Deploy
 
 ---
 
-## 9) PLAN DE VÉRIFICATION
+## 10) PLAN DE VÉRIFICATION
 
 ### Tests
 
@@ -540,8 +557,8 @@ Collecte → Qualité → Features → Train → Eval → Deploy
 
 | Criterion | Test | Target | Status |
 |-----------|------|--------|--------|
-| [Criterion 1] | [How tested] | PASS if [condition] | PASS/FAIL/UNKNOWN |
-| [Criterion 2] | [How tested] | PASS if [condition] | PASS/FAIL/UNKNOWN |
+| [Criterion 1] | [How tested] | PASS if [condition] | PASS/FAIL/À-CLÔTURER |
+| [Criterion 2] | [How tested] | PASS if [condition] | PASS/FAIL/À-CLÔTURER |
 
 ### ⚠️ R-SUITE (Régression) - MANDATORY
 
@@ -578,7 +595,7 @@ Collecte → Qualité → Features → Train → Eval → Deploy
 
 ---
 
-## 10) RISKS REGISTER
+## 11) RISKS REGISTER
 
 | Risk ID | Description | Probability | Impact | Risk Score | Mitigation | Owner | Status |
 |---------|-------------|-------------|--------|------------|------------|-------|--------|
@@ -597,7 +614,7 @@ Low     |  L  |  L  |  M  |
 
 ---
 
-## 11) RAPPORT DE REVUE
+## 12) RAPPORT DE REVUE
 
 ### Auto-Review Scores
 
@@ -627,22 +644,22 @@ Low     |  L  |  L  |  M  |
 
 | Claim-ID | Claim Text | Origin Tag | S-Level | Dependencies | Test | Status |
 |----------|------------|------------|---------|--------------|------|--------|
-| C001 | [Claim] | [USER/DED/HYP/UNKNOWN] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/UNKNOWN |
-| C002 | [Claim] | [USER/DED/HYP/UNKNOWN] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/UNKNOWN |
-| C003 | [Claim] | [USER/DED/HYP/UNKNOWN] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/UNKNOWN |
+| C001 | [Claim] | [USER/DED/HYP/GAP] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/À-CLÔTURER |
+| C002 | [Claim] | [USER/DED/HYP/GAP] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/À-CLÔTURER |
+| C003 | [Claim] | [USER/DED/HYP/GAP] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/À-CLÔTURER |
 
 **Summary:**
 - Total Claims: X
-- By Status: PASS: X, FAIL: Y, UNKNOWN: Z
-- By Origin: [USER]: W, [DED]: X, [HYP]: Y, [UNKNOWN]: Z
+- By Status: PASS: X, FAIL: Y, À-CLÔTURER: Z
+- By Origin: [USER]: W, [DED]: X, [HYP]: Y, [À-CLÔTURER]: Z
 - By S-Level: S0: A, S1: B, S2: C, S3: D, S4: E
 
 **Critical Open Items:**
-1. [Any critical UNKNOWN or FAIL claims]
+1. [Any critical À-CLÔTURER or FAIL claims]
 
 ---
 
-## 12) PROCHAIN PAS UNIQUE + TERM
+## 13) PROCHAIN PAS UNIQUE + TERM
 
 ### Next Immediate Action
 
