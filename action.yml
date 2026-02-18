@@ -29,13 +29,77 @@ inputs:
 outputs:
   passed:
     description: 'Whether the scan passed (no errors)'
+    value: ${{ steps.scan.outputs.passed }}
   errors:
     description: 'Number of errors found'
+    value: ${{ steps.scan.outputs.errors }}
   warnings:
     description: 'Number of warnings found'
+    value: ${{ steps.scan.outputs.warnings }}
   report-path:
     description: 'Path to the generated report files'
+    value: './launchgard-reports'
 
 runs:
-  using: 'node20'
-  main: 'dist/index.js'
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install LaunchGuard
+      shell: bash
+      run: |
+        cd ${{ github.action_path }}
+        npm ci --production
+
+    - name: Build LaunchGuard
+      shell: bash
+      run: |
+        cd ${{ github.action_path }}
+        npm run build
+
+    - name: Run LaunchGuard scan
+      id: scan
+      shell: bash
+      run: |
+        set +e
+        
+        # Build command
+        CMD="node ${{ github.action_path }}/dist/cli.js"
+        CMD="$CMD --mode ${{ inputs.mode }}"
+        CMD="$CMD --output ./launchgard-reports"
+        
+        if [ -n "${{ inputs.baseline }}" ]; then
+          CMD="$CMD --baseline ${{ inputs.baseline }}"
+        fi
+        
+        if [ -n "${{ inputs.create-baseline }}" ]; then
+          CMD="$CMD --create-baseline ${{ inputs.create-baseline }}"
+        fi
+        
+        CMD="$CMD ${{ inputs.files }}"
+        
+        # Run scan
+        eval $CMD
+        EXIT_CODE=$?
+        
+        # Parse results from report.json
+        if [ -f "./launchgard-reports/report.json" ]; then
+          ERRORS=$(jq -r '.summary.errors' ./launchgard-reports/report.json)
+          WARNINGS=$(jq -r '.summary.warnings' ./launchgard-reports/report.json)
+          PASSED=$(jq -r '.summary.passed' ./launchgard-reports/report.json)
+          
+          echo "errors=$ERRORS" >> $GITHUB_OUTPUT
+          echo "warnings=$WARNINGS" >> $GITHUB_OUTPUT
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          
+          # Handle fail-on-warnings
+          if [ "${{ inputs.fail-on-warnings }}" = "true" ] && [ "$WARNINGS" -gt 0 ]; then
+            echo "::error::LaunchGuard found $WARNINGS warning(s) (fail-on-warnings enabled)"
+            exit 1
+          fi
+        fi
+        
+        exit $EXIT_CODE
