@@ -31,7 +31,21 @@ This repository now includes **ARCHI-Ω v1.2**, a comprehensive architectural fr
 3. **Review example**: Check [examples/simple-web-api-example.md](./examples/simple-web-api-example.md)
 4. **Generate output**: Follow [templates/output-format-template.md](./templates/output-format-template.md)
 
+### Validation
+
+**Local validation (3 commands):**
+```bash
+python scripts/archi_omega_lint.py  # Fail-closed validation
+python tests/test_epistemic.py       # Unit tests
+python verify.py                     # Framework verification
+```
+
+See [VALIDATION.md](./VALIDATION.md) for detailed validation guide.
+
+**CI/CD:** GitHub Actions automatically runs all validation checks on push.
+
 ### Configuration
+
 
 Default configuration in [archi-omega-config.yaml](./archi-omega-config.yaml):
 
@@ -107,6 +121,29 @@ Every deliverable includes (in order):
 ### Examples
 
 - [Simple Web API](./examples/simple-web-api-example.md) - Complete walkthrough
+
+### Limitations & Scope
+
+**What the framework does:**
+- Enforces structured reasoning with proof levels and origin tagging
+- Validates claims against risk-based proof budgets
+- Provides templates and pipelines for architectural analysis
+- Prevents fabrication through fail-closed validation
+
+**What the framework does not do:**
+- Does not make architectural decisions for you (provides structure for your decisions)
+- Does not replace domain expertise or professional judgment
+- Does not access external APIs or real-time data automatically
+- Does not provide legal, financial, or medical advice
+- Cannot verify claims beyond the tools and sources you provide
+- Does not eliminate all risks (reduces them through systematic validation)
+
+**Known limitations:**
+- Requires manual input of project requirements
+- Option scoring requires domain knowledge to calibrate
+- External tool integration (pricing APIs, etc.) not included in base implementation
+- Pipeline assumes human review of generated options
+- Does not enforce ARCHI-Ω principles on external content automatically
 
 ### License
 
