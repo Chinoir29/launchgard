@@ -2,8 +2,9 @@
 
 [![CI](https://github.com/Chinoir29/launchgard/actions/workflows/ci.yml/badge.svg)](https://github.com/Chinoir29/launchgard/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![ARCHI-Ω v1.2](https://img.shields.io/badge/ARCHI--Ω-v1.2-blue.svg)](./ARCHI-OMEGA-v1.2.md)
 
-**Deterministic quality gate for product docs, prompts, and repos.** Enforces claim tagging, blocks overpromises, flags recency triggers, detects secrets, and generates deterministic PASS/FAIL reports via CLI and GitHub Action.
+**Deterministic quality gate for product docs, prompts, and repos.** Implements ARCHI-Ω v1.2 methodology with proof levels (S0-S4), risk classification (R0-R3), claim ledger, and sensitivity analysis. Enforces claim tagging, blocks overpromises, flags recency triggers, detects secrets, and generates deterministic PASS/FAIL reports via CLI and GitHub Action.
 
 ## Quick Start
 
@@ -122,9 +123,53 @@ launchgard --baseline .launchgard-baseline.json "**/*.md"
 
 ## Methodology: ARCHI-Ω v1.2
 
-LaunchGuard implements the ARCHI-Ω v1.2 methodology for documentation quality:
+LaunchGuard implements the ARCHI-Ω v1.2 methodology for documentation quality. See [ARCHI-OMEGA-v1.2.md](./ARCHI-OMEGA-v1.2.md) for complete specification.
 
-### Fail-Closed Philosophy
+### Key Enhancements in v1.2
+
+#### 📊 Proof Levels (S0-S4)
+
+Every claim tracked with epistemic foundation:
+
+- **S0**: User data (testimonials, feedback)
+- **S1**: Reasoning/calculation (deductions)
+- **S2**: External sources (tool verification)
+- **S3**: Reproducible tests (PASS/FAIL criteria)
+- **S4**: Cross-checked (≥2 independent sources)
+
+#### ⚠️ Risk Classification (R0-R3)
+
+Violations categorized by impact:
+
+- **R0**: Low (informational, style)
+- **R1**: Operational (overpromises, recency)
+- **R2**: High impact (security, finance, legal)
+- **R3**: Critical (requires STOP)
+
+#### 🧪 Testability Levels (T0-T3)
+
+Claims assessed for verifiability:
+
+- **T0**: Untestable (avoid)
+- **T1**: Implicit test
+- **T2**: Explicit PASS/FAIL (minimum for causality)
+- **T3**: Reproducible with metrics (preferred for R2)
+
+#### 📈 Sensitivity Map
+
+Top 5 factors that would change recommendations:
+
+1. Scan mode changes
+2. Baseline usage
+3. Exposed secrets count
+4. Unverified claims
+5. High-risk violations
+
+Each factor includes impact, threshold, and PASS/FAIL test.
+
+### Core Principles
+
+#### Fail-Closed Philosophy
 
 **By default, quality gates fail unless explicitly passing.** This ensures:
 
@@ -132,7 +177,7 @@ LaunchGuard implements the ARCHI-Ω v1.2 methodology for documentation quality:
 - Violations are caught before production
 - Teams must address issues, not ignore warnings
 
-### No Overpromises
+#### No Overpromises
 
 Absolutist claims damage credibility and create legal/reputation risk. LaunchGuard:
 
@@ -140,13 +185,15 @@ Absolutist claims damage credibility and create legal/reputation risk. LaunchGua
 - Flags "guaranteed" and "100%" language
 - Enforces measured, accurate claims
 
-### Claim Ledger
+#### Enhanced Claim Ledger
 
-Every factual claim must be tagged and tracked:
+Every factual claim must be tagged and tracked with full metadata:
 
-- Creates accountability trail
+- Creates accountability trail with proof levels
 - Enables audit of documentation accuracy
 - Surfaces claims needing sources
+- Distinguishes user feedback from deduced facts
+- Tracks dependencies and testability
 - Distinguishes user feedback from deduced facts
 
 ### PASS/FAIL Tests (R-SUITE)
@@ -198,42 +245,80 @@ Examples:
 
 ## Example Output
 
-### Console Output
+### Console Output (ARCHI-Ω v1.2)
 
 ```
 ═══════════════════════════════════════════════════════════
-  LaunchGuard Scan Results
+  LaunchGuard Scan Results (ARCHI-Ω v1.2)
 ═══════════════════════════════════════════════════════════
 
 Mode:          LIGHT
 Files Scanned: 1
 Status:        ❌ FAIL
-Errors:        3
+Errors:        8
 Warnings:      0
+
+Risk Distribution:
+  🔴 R2 (High Impact):  2
+  🟡 R1 (Operational):  6
 
 ───────────────────────────────────────────────────────────
  Violations
 ───────────────────────────────────────────────────────────
 
-❌ examples/sample-readme.md:5:23
+❌ examples/sample-readme.md:5:19
    [OVER-001] Detects overpromising language
-   ...is **revolutionary** and **guarante...
+   This product is **revolutionary** and **guaranteed**...
 
-❌ examples/sample-readme.md:5:43
-   [OVER-001] Detects overpromising language
-   ...d **guaranteed** to solve all your ...
-
-❌ examples/sample-readme.md:37:16
+❌ examples/sample-readme.md:33:15
    [SEC-001] Detects exposed GitHub tokens
-   ...ken: ghp_123456789012345678901234567...
+   GitHub Token: ghp_1234567890...
+
+───────────────────────────────────────────────────────────
+ Claim Ledger (ARCHI-Ω v1.2)
+───────────────────────────────────────────────────────────
+
+❓ [DED] S1 (T2) examples/sample-readme.md:18
+  - [DED] This product uses AES-256 encryption.
+  Dependencies: AES-256
+
+❓ [USER] S0 (T1) examples/sample-readme.md:19
+  - [USER] Users report 50% faster processing.
+
+───────────────────────────────────────────────────────────
+ Sensitivity Map (ARCHI-Ω v1.2)
+───────────────────────────────────────────────────────────
+
+📊 Exposed Secrets
+   Impact: 2 secret(s) detected - high security risk
+   Test: FAIL if any secrets; PASS if all removed
+
+📊 High-Risk Violations (R2)
+   Impact: 2 high-impact violation(s) detected
+   Test: FAIL while R2 exists; PASS when resolved
 
 ═══════════════════════════════════════════════════════════
 ```
 
 ### Report Files
 
-**report.json** - Complete scan results in JSON format
-**report.md** - Formatted Markdown report with violations and claim ledger
+**report.json** - Complete scan results including:
+- All violations with risk classification
+- Full claim ledger with proof levels, dependencies, testability
+- Sensitivity map with top 5 factors
+- Risk distribution summary
+
+**report.md** - Formatted Markdown report with:
+- Violations grouped by file
+- Enhanced claim ledger table (Claim-ID, S-Level, Dependencies, Testability, Status)
+- Sensitivity map section
+
+## Documentation
+
+- **[ARCHI-OMEGA-v1.2.md](./ARCHI-OMEGA-v1.2.md)** - Complete ARCHI-Ω v1.2 specification
+- **[RUNBOOK.md](./RUNBOOK.md)** - Operational guide and termination states
+- **[METHODOLOGY.md](./METHODOLOGY.md)** - Core principles and rationale
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Development guidelines
 
 ## Examples
 
