@@ -16,21 +16,41 @@ describe('Reporter', () => {
         severity: 'error',
         message: 'Detects overpromising language',
         context: 'guaranteed to work',
+        riskClass: 'R1',
       },
     ],
     claimLedger: [
       {
+        claimId: 'CLAIM-test_md-5-1',
         claim: '[DED] Uses AES-256',
         tag: 'DED',
         file: 'test.md',
         line: 5,
         needsSource: false,
+        proofLevel: 'S1',
+        dependencies: [],
+        testability: 'T2',
+        testStatus: 'UNKNOWN',
+      },
+    ],
+    sensitivityMap: [
+      {
+        factor: 'Test Factor',
+        impact: 'Test impact',
+        threshold: 'test > 0',
+        test: 'PASS if test condition met',
       },
     ],
     summary: {
       errors: 1,
       warnings: 0,
       passed: false,
+      riskDistribution: {
+        R0: 0,
+        R1: 1,
+        R2: 0,
+        R3: 0,
+      },
     },
   };
 
@@ -57,7 +77,7 @@ describe('Reporter', () => {
     const cleanReport: ScanReport = {
       ...mockReport,
       violations: [],
-      summary: { errors: 0, warnings: 0, passed: true },
+      summary: { errors: 0, warnings: 0, passed: true, riskDistribution: { R0: 0, R1: 0, R2: 0, R3: 0 } },
     };
 
     const reporter = new Reporter();

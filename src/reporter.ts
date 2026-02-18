@@ -34,18 +34,33 @@ export class Reporter {
     }
 
     if (report.claimLedger.length > 0) {
-      output += '## Claim Ledger\n\n';
+      output += '## Claim Ledger (ARCHI-Ω v1.2)\n\n';
       output += 'Claims found in scanned files:\n\n';
-      output += '| File | Line | Tag | Needs Source | Claim |\n';
-      output += '|------|------|-----|--------------|-------|\n';
+      output += '| Claim-ID | File | Line | Tag | S-Level | Dependencies | Testability | Test Status | Claim |\n';
+      output += '|----------|------|------|-----|---------|--------------|-------------|-------------|-------|\n';
 
       for (const claim of report.claimLedger) {
-        const needsSource = claim.needsSource ? '⚠️ Yes' : 'No';
         const claimText = claim.claim
           .replace(/\\/g, '\\\\')
           .replace(/\|/g, '\\|')
-          .substring(0, 80);
-        output += `| ${claim.file} | ${claim.line} | ${claim.tag} | ${needsSource} | ${claimText} |\n`;
+          .substring(0, 60);
+        const deps = claim.dependencies.length > 0 ? claim.dependencies.join(', ') : '-';
+        output += `| ${claim.claimId} | ${claim.file} | ${claim.line} | ${claim.tag} | ${claim.proofLevel} | ${deps} | ${claim.testability} | ${claim.testStatus} | ${claimText} |\n`;
+      }
+      output += '\n';
+    }
+
+    // ARCHI-Ω v1.2: Sensitivity Map
+    if (report.sensitivityMap && report.sensitivityMap.length > 0) {
+      output += '## Sensitivity Map (ARCHI-Ω v1.2)\n\n';
+      output += 'Top factors that would change recommendations:\n\n';
+      output += '| Factor | Impact | Threshold | Test |\n';
+      output += '|--------|--------|-----------|------|\n';
+
+      for (const factor of report.sensitivityMap) {
+        const impact = factor.impact.replace(/\|/g, '\\|').substring(0, 60);
+        const test = factor.test.replace(/\|/g, '\\|').substring(0, 60);
+        output += `| ${factor.factor} | ${impact} | ${factor.threshold} | ${test} |\n`;
       }
       output += '\n';
     }
@@ -59,7 +74,7 @@ export class Reporter {
   generateConsoleOutput(report: ScanReport): string {
     let output = '\n';
     output += '═══════════════════════════════════════════════════════════\n';
-    output += '  LaunchGuard Scan Results\n';
+    output += '  LaunchGuard Scan Results (ARCHI-Ω v1.2)\n';
     output += '═══════════════════════════════════════════════════════════\n\n';
 
     output += `Mode:          ${report.mode.toUpperCase()}\n`;
@@ -67,6 +82,16 @@ export class Reporter {
     output += `Status:        ${report.summary.passed ? '✅ PASS' : '❌ FAIL'}\n`;
     output += `Errors:        ${report.summary.errors}\n`;
     output += `Warnings:      ${report.summary.warnings}\n`;
+
+    // ARCHI-Ω v1.2: Risk distribution
+    if (report.summary.riskDistribution) {
+      const rd = report.summary.riskDistribution;
+      output += `\nRisk Distribution:\n`;
+      if (rd.R3 > 0) output += `  ⛔ R3 (Critical):     ${rd.R3}\n`;
+      if (rd.R2 > 0) output += `  🔴 R2 (High Impact):  ${rd.R2}\n`;
+      if (rd.R1 > 0) output += `  🟡 R1 (Operational):  ${rd.R1}\n`;
+      if (rd.R0 > 0) output += `  🟢 R0 (Low):          ${rd.R0}\n`;
+    }
 
     if (report.violations.length > 0) {
       output += '\n───────────────────────────────────────────────────────────\n';
@@ -86,17 +111,34 @@ export class Reporter {
 
     if (report.claimLedger.length > 0 && report.claimLedger.length <= 10) {
       output += '\n───────────────────────────────────────────────────────────\n';
-      output += ' Claim Ledger (sample)\n';
+      output += ' Claim Ledger (ARCHI-Ω v1.2 - sample)\n';
       output += '───────────────────────────────────────────────────────────\n\n';
 
       for (const claim of report.claimLedger.slice(0, 10)) {
-        const needsSource = claim.needsSource ? ' [NEEDS SOURCE]' : '';
-        output += `[${claim.tag}]${needsSource} ${claim.file}:${claim.line}\n`;
-        output += `  ${claim.claim.substring(0, 80)}\n\n`;
+        const status = claim.testStatus === 'PASS' ? '✅' : claim.testStatus === 'FAIL' ? '❌' : '❓';
+        output += `${status} [${claim.tag}] ${claim.proofLevel} (${claim.testability}) ${claim.file}:${claim.line}\n`;
+        output += `  ${claim.claim.substring(0, 80)}\n`;
+        if (claim.dependencies.length > 0) {
+          output += `  Dependencies: ${claim.dependencies.join(', ')}\n`;
+        }
+        output += '\n';
       }
 
       if (report.claimLedger.length > 10) {
         output += `... and ${report.claimLedger.length - 10} more claims\n\n`;
+      }
+    }
+
+    // ARCHI-Ω v1.2: Sensitivity Map
+    if (report.sensitivityMap && report.sensitivityMap.length > 0) {
+      output += '\n───────────────────────────────────────────────────────────\n';
+      output += ' Sensitivity Map (ARCHI-Ω v1.2)\n';
+      output += '───────────────────────────────────────────────────────────\n\n';
+
+      for (const factor of report.sensitivityMap) {
+        output += `📊 ${factor.factor}\n`;
+        output += `   Impact: ${factor.impact}\n`;
+        output += `   Test: ${factor.test}\n\n`;
       }
     }
 

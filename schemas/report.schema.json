@@ -33,6 +33,13 @@
       },
       "description": "Ledger of all claims found in the scanned files"
     },
+    "sensitivityMap": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/sensitivityFactor"
+      },
+      "description": "ARCHI-Ω v1.2: Top 5 factors that would change recommendations"
+    },
     "summary": {
       "type": "object",
       "required": ["errors", "warnings", "passed"],
@@ -50,11 +57,43 @@
         "passed": {
           "type": "boolean",
           "description": "Whether the scan passed (no errors)"
+        },
+        "riskDistribution": {
+          "type": "object",
+          "description": "ARCHI-Ω v1.2: Distribution of violations by risk class",
+          "properties": {
+            "R0": {"type": "integer", "minimum": 0},
+            "R1": {"type": "integer", "minimum": 0},
+            "R2": {"type": "integer", "minimum": 0},
+            "R3": {"type": "integer", "minimum": 0}
+          }
         }
       }
     }
   },
   "definitions": {
+    "sensitivityFactor": {
+      "type": "object",
+      "required": ["factor", "impact", "threshold", "test"],
+      "properties": {
+        "factor": {
+          "type": "string",
+          "description": "Factor name"
+        },
+        "impact": {
+          "type": "string",
+          "description": "Impact description"
+        },
+        "threshold": {
+          "type": "string",
+          "description": "Threshold condition"
+        },
+        "test": {
+          "type": "string",
+          "description": "PASS/FAIL test condition"
+        }
+      }
+    },
     "violation": {
       "type": "object",
       "required": ["file", "line", "column", "ruleId", "severity", "message"],
@@ -89,13 +128,22 @@
         "context": {
           "type": "string",
           "description": "Optional context showing the violating text"
+        },
+        "riskClass": {
+          "type": "string",
+          "enum": ["R0", "R1", "R2", "R3"],
+          "description": "ARCHI-Ω v1.2: Risk class (R0=low, R1=operational, R2=high impact, R3=critical)"
         }
       }
     },
     "claimLedgerEntry": {
       "type": "object",
-      "required": ["claim", "tag", "file", "line", "needsSource"],
+      "required": ["claimId", "claim", "tag", "file", "line", "needsSource", "proofLevel", "dependencies", "testability", "testStatus"],
       "properties": {
+        "claimId": {
+          "type": "string",
+          "description": "ARCHI-Ω v1.2: Unique claim identifier"
+        },
         "claim": {
           "type": "string",
           "description": "The claim text"
@@ -117,6 +165,28 @@
         "needsSource": {
           "type": "boolean",
           "description": "Whether this claim needs a source citation"
+        },
+        "proofLevel": {
+          "type": "string",
+          "enum": ["S0", "S1", "S2", "S3", "S4"],
+          "description": "ARCHI-Ω v1.2: Proof level (S0=user data, S1=reasoning, S2=external source, S3=testable, S4=cross-checked)"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "ARCHI-Ω v1.2: Dependencies of this claim"
+        },
+        "testability": {
+          "type": "string",
+          "enum": ["T0", "T1", "T2", "T3"],
+          "description": "ARCHI-Ω v1.2: Testability level (T0=untestable, T1=implicit, T2=explicit PASS/FAIL, T3=reproducible)"
+        },
+        "testStatus": {
+          "type": "string",
+          "enum": ["PASS", "FAIL", "UNKNOWN"],
+          "description": "ARCHI-Ω v1.2: Test result status"
         }
       }
     }
