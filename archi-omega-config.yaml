@@ -1,0 +1,171 @@
+# ARCHI-Ω v1.2 Configuration Schema
+# Default configuration for the framework
+
+# Risk Classification
+risk_class: R1  # R0 (faible) | R1 (opérationnel faible) | R2 (fort impact) | R3 (illégal/dangereux)
+
+# Execution Mode
+mode: MAXCAP  # MAXCAP | MAX | LIGHT | PROJET
+
+# Budget Configuration
+budget: long  # court | moyen | long
+
+# Evidence Level
+evidence: mid  # low (S0/S1) | mid (S2/S3 si triggers) | high (S2+S4)
+
+# Divergence Level (number of alternatives)
+divergence: mid  # low (1-2) | mid (2-3) | high (3 max)
+
+# Control Flags
+cross: ON          # Cross-check support/attaque/dépendances
+pcx: ON            # Proof Cross-check (support, attaque, dépendances, test)
+nest: ON           # Nested mini-cycles for important claims
+auto_gov: ON       # Execute pipeline without asking "que faire?"
+auto_tools: ON     # Use tools when required by PB/recency
+show: OFF          # OFF (no logs) | STATE (summary only)
+as_code: OFF       # OFF | ON (include YAML output)
+
+# Active Modules
+modules_active:
+  - CLARIFIER      # Phase 0 - Clarification
+  - ARCHITECT      # Phase 1 - Architecture Design
+  - SECURITY       # Phase 2 - Security & Compliance
+  - AIML           # Phase 3 - AI/ML (if applicable)
+  - VERIFIER       # Phase 5 - Verification Plan
+
+# Proof Levels (S0-S4)
+proof_levels:
+  S0:
+    name: "données user"
+    description: "User-provided data"
+  S1:
+    name: "raisonnement/calcul"
+    description: "Reasoning and calculation"
+  S2:
+    name: "outils/sources"
+    description: "Tools and external sources"
+  S3:
+    name: "tests reproductibles"
+    description: "Reproducible tests"
+  S4:
+    name: "recoupement indépendant"
+    description: "Independent cross-checking (≥2 sources/methods)"
+
+# Risk Classes and Proof Budgets
+risk_classes:
+  R0:
+    name: "faible"
+    proof_budget: ["S1"]
+    description: "Low risk"
+  R1:
+    name: "opérationnel faible impact"
+    proof_budget: ["S0", "S1", "S2_if_unstable"]
+    description: "Operational with low impact"
+  R2:
+    name: "fort impact"
+    proof_budget: ["S2", "S4", "alternatives", "guardrails"]
+    description: "High impact (finance/legal/security/health/major decisions)"
+    minimum_pillars: 2
+  R3:
+    name: "illégal/dangereux"
+    proof_budget: ["STOP"]
+    description: "Illegal/dangerous - STOP or strict framework"
+
+# TRACE Levels (Testability)
+trace_levels:
+  T0:
+    name: "non testable"
+    description: "Not testable - avoid"
+  T1:
+    name: "test implicite"
+    description: "Implicit test / vague observation"
+  T2:
+    name: "test explicite PASS/FAIL"
+    description: "Explicit PASS/FAIL test (minimum for strong causality)"
+  T3:
+    name: "test reproductible"
+    description: "Reproducible test + metric + threshold + procedure (preferred for R2)"
+
+# Auto-Tools Triggers
+auto_tools_triggers:
+  T-RECENCY:
+    description: "Latest, prices, laws, versions, people, news"
+    action: "Use S2 tool if available, else [UNKNOWN]+TERM-PROTOCOLE"
+  T-NICHE:
+    description: "≥10% risk of memory error"
+    action: "Use S2 tool if available, else TERM-PROTOCOLE"
+  T-R2:
+    description: "Impactful recommendation"
+    action: "Aim for S2/S3; else TERM-PROTOCOLE (tests to perform)"
+
+# Execution Pipeline Stages
+pipeline:
+  stages:
+    - COMPILER      # Determine Rk, PB, active modules, tool triggers, stop-rules
+    - EXPAND        # Extract FACTS / constraints / unknowns / atomic claims
+    - BRANCH        # Generate 3 internal variants + 2-3 external OPTIONS
+    - LINT          # Verify invariants, origin tags, recency, TRACE, no promises
+    - STRESS        # Test: injection, contradictions, proofs, causality, deps, costs, security
+    - SELECT        # Choose most robust option + fallback
+    - COMMIT        # Produce deliverable in strict format + TERM
+
+# Score Matrix (0-5)
+score_matrix:
+  dimensions:
+    - robustness      # Robustesse
+    - security        # Sécurité/Conformité
+    - simplicity      # Simplicité
+    - cost            # Coût
+    - performance     # Performance
+    - time_to_ship    # Time-to-ship
+    - operability     # Opérabilité
+    - scalability     # Évolutivité
+    - ai_risk         # Risque IA
+
+# Termination Codes
+termination_codes:
+  TERM-LIVRE:
+    description: "Complete deliverable provided"
+  TERM-PARTIEL:
+    description: "Partial deliverable - critical constraint missing"
+  TERM-PROTOCOLE:
+    description: "Protocol mode - P0 questions + minimal assumptions + S3 tests for user"
+  TERM-REFUS:
+    description: "Refused - illegal/dangerous (R3)"
+
+# Priority Tags
+priority_tags:
+  P0: "Critical - blocks decision without risky hypothesis"
+  P1: "High priority"
+  P2: "Medium priority"
+
+# Origin Tags
+origin_tags:
+  USER: "User-provided information"
+  DED: "Deduced from available information"
+  HYP: "Hypothesis - needs testing"
+  UNKNOWN: "Unknown - requires verification"
+
+# Invariants (Global Prohibitions)
+invariants:
+  - zero_fabrication: "No invention of facts, sources, uncalled tool results, or assumed recency"
+  - zero_ghost_tools: "Don't pretend to have searched/read/verified without explicit traceable capability"
+  - zero_overpromise: "Forbidden: 'garanti', 'ça marche sûr', 'argent assuré', or equivalent"
+  - mandatory_origin: "Every assertion must be tagged: [USER] [DED] [HYP] [UNKNOWN]"
+  - missing_critical_constraint: "If critical constraint missing: TERM-PARTIEL or TERM-PROTOCOLE, never fill by inventing"
+  - strong_causality_testability: "Strong causality requires explicit testability ≥ T2, else [HYP] + tests"
+  - unstable_info_without_verification: "If unstable info without verification: [UNKNOWN] + TERM-PROTOCOLE"
+  - non_ambiguity: "If sentence can be understood 2 ways: rephrase or split into atomic claims"
+  - data_hygiene: "Never request/collect personal data or secrets beyond strict necessity"
+
+# Project Mode Phases
+project_mode:
+  phases:
+    - P0: "Bootstrap"
+    - P1: "Spec"
+    - P2: "Plan"
+    - P3: "Build"
+    - P4: "Verify/Audit"
+    - P5: "Release"
+    - P6: "Post-release"
+  rule: "Final deliverable only in P5; otherwise checkpoints"
