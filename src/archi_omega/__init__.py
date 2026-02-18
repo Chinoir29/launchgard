@@ -22,7 +22,7 @@ from .epistemic.foundation import (
     Claim,
     ClaimLedger,
     RiskClassifier,
-    ProofValidator
+    ProofValidator,
 )
 
 from .pipeline.stages import (
@@ -35,7 +35,7 @@ from .pipeline.stages import (
     Linter,
     Stressor,
     Selector,
-    Committer
+    Committer,
 )
 
 __all__ = [
@@ -49,7 +49,6 @@ __all__ = [
     "ClaimLedger",
     "RiskClassifier",
     "ProofValidator",
-    
     # Pipeline
     "Pipeline",
     "ProjectContext",
@@ -60,5 +59,5 @@ __all__ = [
     "Linter",
     "Stressor",
     "Selector",
-    "Committer"
+    "Committer",
 ]
