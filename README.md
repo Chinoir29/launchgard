@@ -1,10 +1,10 @@
 # launchgard
 
-Deterministic quality gate for product docs, prompts, and repos. Enforces claim tagging ([USER]/[HYP]/[DED]/[UNKNOWN]), blocks overpromises, flags recency, detects secrets, and generates PASS/FAIL reports via CLI + GitHub Action.
+Deterministic quality gate for product docs, prompts, and repos. Enforces claim tagging ([USER]/[HYP]/[DED]/[GAP]), blocks overpromises, flags recency, detects secrets, and generates PASS/FAIL reports via CLI + GitHub Action.
 
-## 🟥🟩 ARCHI-Ω v1.2 Framework
+## 🟥🟩 ARCHI-Ω v1.2.1 Framework
 
-This repository now includes **ARCHI-Ω v1.2**, a comprehensive architectural framework with:
+This repository now includes **ARCHI-Ω v1.2.1**, a comprehensive architectural framework with:
 
 - **Fail-closed authority** and context firewall (anti-injection)
 - **Proof-level system** (S0-S4) with mandatory origin tagging
@@ -13,20 +13,31 @@ This repository now includes **ARCHI-Ω v1.2**, a comprehensive architectural fr
 - **Auto-governance** and auto-tools routing
 - **Testability levels** (T0-T3) for claim verification
 - **Structured deliverables** with mandatory sections
+- **🆕 v1.2.1**: [UNKNOWN] → [GAP] + mandatory "GAP→DECISION→TEST→TERM" rule
 
 ### Key Features
 
 - ✅ **Zero fabrication**: No invention of facts, sources, or recency assumptions
-- ✅ **Origin tagging**: Every claim tagged [USER]/[DED]/[HYP]/[UNKNOWN]
+- ✅ **Origin tagging**: Every claim tagged [USER]/[DED]/[HYP]/[GAP]
 - ✅ **Proof budgets**: Risk-based evidence requirements (S0-S4)
 - ✅ **Testability**: All strong causality claims require TRACE ≥ T2
 - ✅ **Security**: Data hygiene, secrets management, PII protection
-- ✅ **Fail-closed**: Unknown critical info triggers TERM-PROTOCOLE
+- ✅ **Fail-closed**: Information gaps trigger GAP→DECISION→TEST→TERM
 - ✅ **Claim ledger**: Track all important assertions with tests and status
+
+### What's New in v1.2.1
+
+- 🔄 **[UNKNOWN] replaced with [GAP]**: More explicit handling of information gaps
+- 📋 **Mandatory GAP section**: Output format now includes section 3) GAPS with structured handling
+- ✅ **GAP→DECISION→TEST→TERM rule**: Every gap must include:
+  - A conservative default decision
+  - A test to close the gap (PASS/FAIL criteria)
+  - Impact if the decision is wrong
+- 🚫 **No ending on gaps**: Gaps cannot be "the end" of a response - must have resolution path
 
 ### Quick Start
 
-1. **Use the framework**: See [ARCHI-OMEGA-v1.2.md](./ARCHI-OMEGA-v1.2.md) for complete framework
+1. **Use the framework**: See [ARCHI-OMEGA-v1.2.1.md](./ARCHI-OMEGA-v1.2.1.md) for complete framework
 2. **Fill user input**: Use [templates/user-input-template.md](./templates/user-input-template.md)
 3. **Review example**: Check [examples/simple-web-api-example.md](./examples/simple-web-api-example.md)
 4. **Generate output**: Follow [templates/output-format-template.md](./templates/output-format-template.md)
@@ -107,16 +118,17 @@ Every deliverable includes (in order):
 0. FACTS [USER]
 1. OPEN QUESTIONS (P0→P2)
 2. ASSUMPTIONS [HYP]
-3. OPTIONS + SCORES
-4. RECOMMANDATION + SENSITIVITY MAP
-5. ARCHITECTURE CIBLE
-6. SÉCURITÉ & CONFORMITÉ
-7. IA/ML (if applicable)
-8. ADR (Decision Records)
-9. PLAN DE VÉRIFICATION + R-SUITE
-10. RISKS REGISTER
-11. RAPPORT DE REVUE + CLAIM LEDGER
-12. PROCHAIN PAS + TERM + RUNBOOK
+3. **GAPS [GAP]** (mandatory in v1.2.1)
+4. OPTIONS + SCORES
+5. RECOMMANDATION + SENSITIVITY MAP
+6. ARCHITECTURE CIBLE
+7. SÉCURITÉ & CONFORMITÉ
+8. IA/ML (if applicable)
+9. ADR (Decision Records)
+10. PLAN DE VÉRIFICATION + R-SUITE
+11. RISKS REGISTER
+12. RAPPORT DE REVUE + CLAIM LEDGER
+13. PROCHAIN PAS + TERM + RUNBOOK
 
 ### Examples
 
@@ -151,5 +163,5 @@ Every deliverable includes (in order):
 
 ---
 
-**Version**: ARCHI-Ω v1.2  
+**Version**: ARCHI-Ω v1.2.1  
 **Last Updated**: 2026-02-18
