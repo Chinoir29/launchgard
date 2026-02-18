@@ -142,6 +142,6 @@ YYYY-MM-DD
 
 ## Notes
 
-- This ADR follows ARCHI-Ω v1.2 framework
-- All claims should be tagged: [USER] [DED] [HYP] [UNKNOWN]
+- This ADR follows ARCHI-Ω v1.2.1 framework
+- All claims should be tagged: [USER] [DED] [HYP] [GAP]
 - Strong causality requires TRACE ≥ T2

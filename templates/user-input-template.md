@@ -1,4 +1,4 @@
-# ARCHI-Ω v1.2 - User Input Template
+# ARCHI-Ω v1.2.1 - User Input Template
 
 **Instructions**: Fill in the sections below as completely as possible. If a section is not applicable, mark it as "N/A" with a brief explanation. Critical missing information will trigger P0 questions.
 

@@ -1,10 +1,12 @@
 # launchgard
 
-Deterministic quality gate for product docs, prompts, and repos. Enforces claim tagging ([USER]/[HYP]/[DED]/[UNKNOWN]), blocks overpromises, flags recency, detects secrets, and generates PASS/FAIL reports via CLI + GitHub Action.
+Deterministic quality gate for product docs, prompts, and repos. Enforces claim tagging ([USER]/[HYP]/[DED]/[GAP]), blocks overpromises, flags recency, detects secrets, and generates PASS/FAIL reports via CLI + GitHub Action.
 
-## 🟥🟩 ARCHI-Ω v1.2 Framework
+**NEW in v1.2.1**: Complete removal of [UNKNOWN] → replaced by [GAP] + mandatory "GAP→DECISION→TEST→TERM" rule.
 
-This repository now includes **ARCHI-Ω v1.2**, a comprehensive architectural framework with:
+## 🟥🟩 ARCHI-Ω v1.2.1 Framework
+
+This repository now includes **ARCHI-Ω v1.2.1**, a comprehensive architectural framework with:
 
 - **Fail-closed authority** and context firewall (anti-injection)
 - **Proof-level system** (S0-S4) with mandatory origin tagging
@@ -17,11 +19,12 @@ This repository now includes **ARCHI-Ω v1.2**, a comprehensive architectural fr
 ### Key Features
 
 - ✅ **Zero fabrication**: No invention of facts, sources, or recency assumptions
-- ✅ **Origin tagging**: Every claim tagged [USER]/[DED]/[HYP]/[UNKNOWN]
+- ✅ **Origin tagging**: Every claim tagged [USER]/[DED]/[HYP]/[GAP]
+- ✅ **GAP rule**: Every [GAP] requires conservative DECISION + TEST + TERM
 - ✅ **Proof budgets**: Risk-based evidence requirements (S0-S4)
 - ✅ **Testability**: All strong causality claims require TRACE ≥ T2
 - ✅ **Security**: Data hygiene, secrets management, PII protection
-- ✅ **Fail-closed**: Unknown critical info triggers TERM-PROTOCOLE
+- ✅ **Fail-closed**: Critical gaps trigger TERM-PROTOCOLE
 - ✅ **Claim ledger**: Track all important assertions with tests and status
 
 ### Quick Start
@@ -151,5 +154,5 @@ Every deliverable includes (in order):
 
 ---
 
-**Version**: ARCHI-Ω v1.2  
+**Version**: ARCHI-Ω v1.2.1  
 **Last Updated**: 2026-02-18

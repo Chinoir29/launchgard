@@ -1,19 +1,20 @@
-# Claim Ledger Template - ARCHI-Ω v1.2
+# Claim Ledger Template - ARCHI-Ω v1.2.1
 
 ## Purpose
 
 The Claim Ledger tracks all important claims (assertions that change decisions, costs, risks, or architecture) to ensure:
-1. Every claim has a clear origin tag ([USER] [DED] [HYP] [UNKNOWN])
+1. Every claim has a clear origin tag ([USER] [DED] [HYP] [GAP])
 2. Every claim has appropriate proof level (S0-S4)
 3. Every claim has testability level (T0-T3)
 4. Every claim's dependencies are tracked
 5. Every claim has a test and status
+6. Every [GAP] claim has a DECISION, TEST, and termination plan
 
 ## Ledger Format
 
 | Claim-ID | Claim Text | Origin Tag | S-Level | Dependencies | Test | Status |
 |----------|------------|------------|---------|--------------|------|--------|
-| C001 | [Short claim description] | [USER/DED/HYP/UNKNOWN] | S0-S4 | [List of dependent claim IDs] | [Test description] | PASS/FAIL/UNKNOWN |
+| C001 | [Short claim description] | [USER/DED/HYP/GAP] | S0-S4 | [List of dependent claim IDs] | [Test description] | PASS/FAIL/À-CLÔTURER |
 
 ## Example Entries
 
@@ -21,8 +22,8 @@ The Claim Ledger tracks all important claims (assertions that change decisions, 
 |----------|------------|------------|---------|--------------|------|--------|
 | C001 | System must handle 10K QPS | [USER] | S0 | - | Load test: 10K QPS sustained for 5 min | PASS |
 | C002 | PostgreSQL can handle required write throughput | [DED] | S1 | C001 | Benchmark: 10K writes/sec on similar hardware | PASS |
-| C003 | Using Redis for caching will reduce DB load by 70% | [HYP] | S1 | C001, C002 | A/B test: measure DB load reduction | UNKNOWN |
-| C004 | Latest version of library X fixes security issue | [UNKNOWN] | S0 | - | Verify: Check CVE database + release notes | UNKNOWN |
+| C003 | Using Redis for caching will reduce DB load by 70% | [HYP] | S1 | C001, C002 | A/B test: measure DB load reduction | À-CLÔTURER |
+| C004 | Latest version of library X fixes security issue | [GAP] | S0 | - | Verify: Check CVE database + release notes (DECISION: assume current version secure until verified) | À-CLÔTURER |
 | C005 | AWS Lambda costs will be under $500/month | [DED] | S1 | C001 | Calculate: (10K QPS × avg duration × price) × safety margin | PASS |
 
 ## Claim Origin Tags
@@ -30,7 +31,7 @@ The Claim Ledger tracks all important claims (assertions that change decisions, 
 - **[USER]**: Information directly provided by the user
 - **[DED]**: Deduced from available information through reasoning
 - **[HYP]**: Hypothesis that needs testing/verification
-- **[UNKNOWN]**: Information not available, requires external verification
+- **[GAP]**: Information gap requiring: (a) conservative DECISION, (b) TEST to close gap, (c) impact assessment
 
 ## Proof Levels (S-Levels)
 
@@ -57,13 +58,14 @@ The Claim Ledger tracks all important claims (assertions that change decisions, 
 4. Determine proof level based on available evidence
 5. List all claim dependencies (other claims it relies on)
 6. Define a specific test (PASS/FAIL criteria)
-7. Set initial status (usually UNKNOWN until tested)
+7. Set initial status (usually À-CLÔTURER until tested)
+8. For [GAP] tags: specify conservative DECISION and impact assessment
 
 ### Updating Claim Status
 
 - **PASS**: Test executed successfully, claim verified
 - **FAIL**: Test executed, claim disproven or criteria not met
-- **UNKNOWN**: Not yet tested or awaiting verification
+- **À-CLÔTURER**: Not yet tested or awaiting verification (must have assigned action)
 
 ### Important Claims Requiring Ledger Entry
 
@@ -81,9 +83,10 @@ Claims that should be tracked:
 
 1. **No [USER] claims without source**: User claims must reference where user provided this
 2. **[HYP] requires test**: Every hypothesis must have a defined test
-3. **[UNKNOWN] triggers protocol**: Unknown information triggers TERM-PROTOCOLE if critical
+3. **[GAP] triggers "GAP→DECISION→TEST→TERM"**: Every GAP must have: (a) conservative decision, (b) test to close gap, (c) termination path. Critical GAPs trigger TERM-PROTOCOLE
 4. **Strong causality needs ≥T2**: If claim states "X causes Y", testability must be ≥T2
 5. **R2 claims need ≥S2**: High-impact risk claims require proof level ≥S2
+6. **No À-CLÔTURER without action**: Every À-CLÔTURER status must have assigned test or action
 
 ## Claim Ledger Review Checklist
 
@@ -93,9 +96,10 @@ Claims that should be tracked:
 - [ ] All dependencies are mapped
 - [ ] All claims have defined tests
 - [ ] All [HYP] claims have verification plans
-- [ ] All [UNKNOWN] claims are documented for follow-up
+- [ ] All [GAP] claims have: decision + test + impact assessment
 - [ ] No [DED] claims without clear reasoning chain
 - [ ] Strong causal claims have TRACE ≥ T2
+- [ ] All À-CLÔTURER statuses have assigned actions
 
 ## Template for New Claim Ledger
 
@@ -119,13 +123,22 @@ Claims that should be tracked:
 - Total Claims: 
 - PASS: 
 - FAIL: 
-- UNKNOWN: 
-- By Origin: [USER]: X, [DED]: Y, [HYP]: Z, [UNKNOWN]: W
+- À-CLÔTURER: 
+- By Origin: [USER]: X, [DED]: Y, [HYP]: Z, [GAP]: W
 - By S-Level: S0: X, S1: Y, S2: Z, S3: W, S4: V
 
 ## Critical Open Items
 
-[List any critical UNKNOWN or FAIL claims that need attention]
+[List any critical GAP or FAIL claims that need attention]
+
+### GAP Claims Requiring Closure
+
+[For each GAP claim, specify:
+- GAP-ID: [ID]
+- Description: [What information is missing]
+- Conservative Decision: [What decision was made in absence of info]
+- Test to Close: [How to verify/obtain the missing information]
+- Impact if Wrong: [What happens if decision was incorrect]]
 
 ## Next Steps
 
