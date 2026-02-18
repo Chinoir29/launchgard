@@ -66,6 +66,49 @@ class Profile(Enum):
 
 
 @dataclass
+class GapClosure:
+    """
+    Mandatory closure for [GAP] tags.
+    A [GAP] can never be "the end" - must trigger: DECISION + TEST + IMPACT + TERM
+    """
+    gap_id: str
+    gap_description: str
+    decision: str  # Conservative choice (minimizes impact/risk)
+    test: str  # PASS/FAIL closure test
+    impact: str  # Risk/cost/time impact
+    term_code: str  # TERM-PROTOCOLE, TERM-PARTIEL, etc.
+    
+    def validate(self) -> Dict[str, Any]:
+        """Validate that gap closure is complete"""
+        issues = []
+        
+        if not self.decision:
+            issues.append(f"GAP {self.gap_id}: Missing DECISION")
+        if not self.test:
+            issues.append(f"GAP {self.gap_id}: Missing TEST")
+        if not self.impact:
+            issues.append(f"GAP {self.gap_id}: Missing IMPACT")
+        if not self.term_code:
+            issues.append(f"GAP {self.gap_id}: Missing TERM code")
+        
+        return {
+            "valid": len(issues) == 0,
+            "issues": issues
+        }
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary"""
+        return {
+            "gap_id": self.gap_id,
+            "gap": self.gap_description,
+            "decision": self.decision,
+            "test": self.test,
+            "impact": self.impact,
+            "term": self.term_code
+        }
+
+
+@dataclass
 class ProofBudget:
     """Proof budget requirements for a risk class"""
     risk_class: RiskClass
