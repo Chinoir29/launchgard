@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LaunchGuard Baseline",
+  "type": "object",
+  "required": ["version", "timestamp", "violations"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Baseline format version"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the baseline was created"
+    },
+    "violations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/baselineViolation"
+      },
+      "description": "List of violations to ignore"
+    }
+  },
+  "definitions": {
+    "baselineViolation": {
+      "type": "object",
+      "required": ["file", "ruleId", "line", "hash"],
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "Path to the file containing the violation"
+        },
+        "ruleId": {
+          "type": "string",
+          "description": "Rule identifier"
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Line number"
+        },
+        "hash": {
+          "type": "string",
+          "description": "Hash of the violation context for matching"
+        }
+      }
+    }
+  }
+}

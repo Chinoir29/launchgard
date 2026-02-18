@@ -1,0 +1,99 @@
+version: '1.0.0'
+rules:
+  claimTagging:
+    - id: 'CLAIM-001'
+      name: 'Missing claim tags'
+      description: 'Factual claims must be tagged with [USER], [DED], [HYP], or [UNKNOWN]'
+      severity: 'warning'
+      enabled: true
+      patterns:
+        - 'will'
+        - 'is the best'
+        - 'provides'
+        - 'ensures'
+        - 'guarantees'
+
+  overpromises:
+    - id: 'OVER-001'
+      name: 'Absolute claims'
+      description: 'Detects overpromising language that should be avoided'
+      severity: 'error'
+      enabled: true
+      patterns:
+        - 'guaranteed'
+        - 'guarantee'
+        - 'always works'
+        - 'never fails'
+        - 'unique in the world'
+        - 'revolutionary'
+        - 'game-changing'
+        - 'world-class'
+        - 'best in class'
+        - '100% secure'
+        - 'completely safe'
+        - 'perfectly'
+
+  recencyTriggers:
+    - id: 'REC-001'
+      name: 'Recency/instability triggers'
+      description: 'Content that may become outdated needs sources'
+      severity: 'warning'
+      enabled: true
+      patterns:
+        - '2024'
+        - '2025'
+        - '2026'
+        - '2027'
+        - 'latest'
+        - 'current'
+        - 'recent'
+        - 'newest'
+        - 'price'
+        - 'cost'
+        - "\\$[0-9]"
+        - 'law'
+        - 'legal'
+        - 'regulation'
+        - 'compliance'
+
+  secretDetection:
+    - id: 'SEC-001'
+      name: 'GitHub tokens'
+      description: 'Detects exposed GitHub tokens'
+      severity: 'error'
+      enabled: true
+      patterns:
+        - 'ghp_[a-zA-Z0-9]{30,}'
+        - 'gho_[a-zA-Z0-9]{30,}'
+        - 'ghu_[a-zA-Z0-9]{30,}'
+        - 'ghs_[a-zA-Z0-9]{30,}'
+        - 'ghr_[a-zA-Z0-9]{30,}'
+        - 'github_pat_[a-zA-Z0-9_]{60,}'
+
+    - id: 'SEC-002'
+      name: 'OpenAI API keys'
+      description: 'Detects exposed OpenAI API keys'
+      severity: 'error'
+      enabled: true
+      patterns:
+        - 'sk-[a-zA-Z0-9]{40,}'
+        - 'sk-proj-[a-zA-Z0-9]{40,}'
+
+    - id: 'SEC-003'
+      name: 'AWS keys'
+      description: 'Detects exposed AWS access keys'
+      severity: 'error'
+      enabled: true
+      patterns:
+        - 'AKIA[0-9A-Z]{16}'
+        - 'AWS_SECRET_ACCESS_KEY.*[A-Za-z0-9/+=]{40}'
+
+    - id: 'SEC-004'
+      name: 'Generic secrets'
+      description: 'Detects common secret patterns'
+      severity: 'error'
+      enabled: true
+      patterns:
+        - "api[_-]?key[\"']?\\s*[:=]\\s*[\"'][a-zA-Z0-9]{20,}[\"']"
+        - "api[_-]?secret[\"']?\\s*[:=]\\s*[\"'][a-zA-Z0-9]{20,}[\"']"
+        - "password[\"']?\\s*[:=]\\s*[\"'][^\"']{8,}[\"']"
