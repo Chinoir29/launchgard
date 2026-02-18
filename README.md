@@ -147,7 +147,25 @@ Every deliverable includes (in order):
 
 ### License
 
-[To be determined]
+MIT License - see [LICENSE](./LICENSE) file for details.
+
+## Why Pay / Gumroad
+
+**launchgard is free and open-source** under the MIT License. The entire framework, including all features described above, is available at no cost for any use (personal, commercial, or enterprise).
+
+### Support Development Through Gumroad
+
+While the core framework is completely free, purchasing on Gumroad helps support ongoing development and can include:
+
+- **Premium Support**: Priority email support and implementation guidance
+- **Convenience Bundles**: Pre-configured setups and ready-to-use templates
+- **Premium Packs**: Additional examples, industry-specific templates, and integration guides
+- **Faster Onboarding**: Video tutorials and step-by-step walkthroughs
+- **Future Development**: Your purchase directly funds new features and improvements
+
+**Get the premium package**: [https://gumroad.com/l/launchgard](https://gumroad.com/l/launchgard)
+
+The free MIT-licensed version gives you everything you need. The Gumroad purchase is entirely optional and supports the project's continued evolution.
 
 ---
 
