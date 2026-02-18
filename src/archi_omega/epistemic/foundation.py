@@ -1,12 +1,14 @@
 """
-ARCHI-Ω v1.2 - Epistemic Foundation
+ARCHI-Ω v1.3.0 - Epistemic Foundation
 
 This module implements the epistemic foundation of the ARCHI-Ω framework:
 - Proof levels (S0-S4)
 - Risk classes (R0-R3)
+- Complexity classes (C0-C3)
 - Proof budgets
 - Testability levels (T0-T3)
-- Origin tags
+- Origin tags with [GAP] mandatory closure
+- Profile selection (P-SIMPLE/STANDARD/COMPLEX/PROJET)
 """
 
 from enum import Enum
@@ -41,10 +43,69 @@ class TestabilityLevel(Enum):
 
 class OriginTag(Enum):
     """Origin tags for claims"""
-    USER = "USER"  # User-provided information
-    DED = "DED"  # Deduced from available information
-    HYP = "HYP"  # Hypothesis - needs testing
-    UNKNOWN = "UNKNOWN"  # Unknown - requires verification
+    USER = "USER"  # User-provided information (explicit in chat)
+    DED = "DED"  # Deduced from available information (explicit chain, no jumps)
+    HYP = "HYP"  # Hypothesis - proposed (not proven) with impact/risk + test
+    GAP = "GAP"  # Information missing / unstable / not verifiable here and now
+
+
+class ComplexityClass(Enum):
+    """Complexity classification (C0-C3)"""
+    C0 = "trivial"  # Trivial task
+    C1 = "simple"  # Simple single deliverable (skeleton repo, short doc)
+    C2 = "moderate"  # Multiple components/CI/tests/integrations
+    C3 = "complex"  # Complete product / security / scale / multi-phase → PROJET
+
+
+class Profile(Enum):
+    """Profile classification based on Rk/Ck"""
+    P_SIMPLE = "P-SIMPLE"  # R0-R1 & C0-C1
+    P_STANDARD = "P-STANDARD"  # R1 or C1-C2
+    P_COMPLEX = "P-COMPLEX"  # R2 or C2-C3
+    P_PROJET = "P-PROJET"  # C3 or multi-phase objective
+
+
+@dataclass
+class GapClosure:
+    """
+    Mandatory closure for [GAP] tags.
+    A [GAP] can never be "the end" - must trigger: DECISION + TEST + IMPACT + TERM
+    """
+    gap_id: str
+    gap_description: str
+    decision: str  # Conservative choice (minimizes impact/risk)
+    test: str  # PASS/FAIL closure test
+    impact: str  # Risk/cost/time impact
+    term_code: str  # TERM-PROTOCOLE, TERM-PARTIEL, etc.
+    
+    def validate(self) -> Dict[str, Any]:
+        """Validate that gap closure is complete"""
+        issues = []
+        
+        if not self.decision:
+            issues.append(f"GAP {self.gap_id}: Missing DECISION")
+        if not self.test:
+            issues.append(f"GAP {self.gap_id}: Missing TEST")
+        if not self.impact:
+            issues.append(f"GAP {self.gap_id}: Missing IMPACT")
+        if not self.term_code:
+            issues.append(f"GAP {self.gap_id}: Missing TERM code")
+        
+        return {
+            "valid": len(issues) == 0,
+            "issues": issues
+        }
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary"""
+        return {
+            "gap_id": self.gap_id,
+            "gap": self.gap_description,
+            "decision": self.decision,
+            "test": self.test,
+            "impact": self.impact,
+            "term": self.term_code
+        }
 
 
 @dataclass
@@ -102,8 +163,9 @@ class Claim:
     proof_level: ProofLevel
     dependencies: List[str]  # List of claim IDs this depends on
     test_description: str
-    status: str  # "PASS", "FAIL", "UNKNOWN"
+    status: str  # "PASS", "FAIL", "À-CLÔTURER"
     testability: TestabilityLevel = TestabilityLevel.T2
+    gap_closure: Optional['GapClosure'] = None  # Required if origin_tag == GAP
     
     def validate_strong_causality(self) -> bool:
         """
@@ -117,9 +179,23 @@ class Claim:
             return self.testability in [TestabilityLevel.T2, TestabilityLevel.T3]
         return True
     
+    def validate_gap_closure(self) -> Dict[str, Any]:
+        """
+        Validate that GAP tags have mandatory closure.
+        RULE: A [GAP] can never be "the end" - must have DECISION+TEST+IMPACT+TERM
+        """
+        if self.origin_tag == OriginTag.GAP:
+            if self.gap_closure is None:
+                return {
+                    "valid": False,
+                    "issues": [f"Claim {self.claim_id} has [GAP] tag but missing gap_closure (DECISION+TEST+IMPACT+TERM)"]
+                }
+            return self.gap_closure.validate()
+        return {"valid": True, "issues": []}
+    
     def to_dict(self) -> Dict[str, Any]:
         """Convert claim to dictionary for ledger"""
-        return {
+        result = {
             "claim_id": self.claim_id,
             "text": self.text,
             "origin_tag": self.origin_tag.value,
@@ -129,6 +205,11 @@ class Claim:
             "status": self.status,
             "testability": self.testability.value
         }
+        
+        if self.gap_closure:
+            result["gap_closure"] = self.gap_closure.to_dict()
+        
+        return result
 
 
 class RiskClassifier:
@@ -168,6 +249,109 @@ class RiskClassifier:
         return RiskClass.R1
 
 
+class ComplexityClassifier:
+    """
+    Classifies project complexity (C0-C3) using additive heuristic.
+    Section 4.1: fail-closed approach with deterministic scoring.
+    """
+    
+    @staticmethod
+    def classify(
+        has_repo_ci_docs: bool = False,
+        has_auth_payment_storage_api: bool = False,
+        has_security_compliance_sensitive_data: bool = False,
+        has_perf_load_sla: bool = False,
+        is_prod_business: bool = False
+    ) -> ComplexityClass:
+        """
+        Classify complexity using additive scoring (fail-closed).
+        
+        Heuristic:
+        +1 if repo+CI+docs
+        +1 if auth/payment/storage/API externe
+        +1 if security/compliance/sensitive data
+        +1 if perf/load/SLA
+        +1 if "prod/sales/users/business"
+        
+        Mapping: 0-1→C1; 2-3→C2; ≥4→C3
+        
+        Returns:
+            ComplexityClass: C0, C1, C2, or C3
+        """
+        score = 0
+        
+        if has_repo_ci_docs:
+            score += 1
+        if has_auth_payment_storage_api:
+            score += 1
+        if has_security_compliance_sensitive_data:
+            score += 1
+        if has_perf_load_sla:
+            score += 1
+        if is_prod_business:
+            score += 1
+        
+        if score == 0:
+            return ComplexityClass.C0  # Trivial
+        elif score <= 1:
+            return ComplexityClass.C1  # Simple
+        elif score <= 3:
+            return ComplexityClass.C2  # Moderate
+        else:  # score >= 4
+            return ComplexityClass.C3  # Complex
+
+
+class ProfileSelector:
+    """
+    Selects appropriate profile (P-SIMPLE/STANDARD/COMPLEX/PROJET) based on Rk/Ck.
+    Section 4.2-4.3: Conservative choice if doubt.
+    """
+    
+    @staticmethod
+    def select_profile(risk_class: RiskClass, complexity_class: ComplexityClass) -> Profile:
+        """
+        Select profile based on risk and complexity.
+        
+        Rules:
+        - P-SIMPLE: R0-R1 & C0-C1
+        - P-STANDARD: R1 or C1-C2
+        - P-COMPLEX: R2 or C2-C3
+        - P-PROJET: C3 or multi-phase
+        
+        Conservative: if in doubt, select higher profile.
+        
+        Returns:
+            Profile: Selected profile
+        """
+        # C3 always triggers P-PROJET
+        if complexity_class == ComplexityClass.C3:
+            return Profile.P_PROJET
+        
+        # R2 always triggers P-COMPLEX (high risk)
+        if risk_class == RiskClass.R2:
+            return Profile.P_COMPLEX
+        
+        # R3 would be TERM-REFUS, but handle conservatively as P-COMPLEX
+        if risk_class == RiskClass.R3:
+            return Profile.P_COMPLEX
+        
+        # C2 → P-STANDARD or P-COMPLEX
+        if complexity_class == ComplexityClass.C2:
+            return Profile.P_COMPLEX if risk_class == RiskClass.R2 else Profile.P_STANDARD
+        
+        # C1 with R1 → P-STANDARD
+        if complexity_class == ComplexityClass.C1 and risk_class == RiskClass.R1:
+            return Profile.P_STANDARD
+        
+        # C0-C1 with R0-R1 → P-SIMPLE
+        if complexity_class in [ComplexityClass.C0, ComplexityClass.C1] and \
+           risk_class in [RiskClass.R0, RiskClass.R1]:
+            return Profile.P_SIMPLE
+        
+        # Default conservative: P-STANDARD
+        return Profile.P_STANDARD
+
+
 class ProofValidator:
     """Validates proof levels against requirements"""
     
@@ -187,12 +371,18 @@ class ProofValidator:
             "warnings": []
         }
         
-        # Check origin tag
-        if claim.origin_tag == OriginTag.UNKNOWN and risk_class in [RiskClass.R2, RiskClass.R3]:
-            results["issues"].append(
-                f"Claim {claim.claim_id} has UNKNOWN origin for high-risk ({risk_class.value})"
-            )
+        # Check GAP closure (mandatory in v1.3.0)
+        gap_validation = claim.validate_gap_closure()
+        if not gap_validation["valid"]:
+            results["issues"].extend(gap_validation["issues"])
             results["valid"] = False
+        
+        # Check origin tag
+        if claim.origin_tag == OriginTag.GAP and risk_class in [RiskClass.R2, RiskClass.R3]:
+            results["warnings"].append(
+                f"Claim {claim.claim_id} has [GAP] origin for high-risk ({risk_class.value}) - "
+                f"ensure DECISION is conservative and TEST is defined"
+            )
         
         # Check testability for strong causality
         if not claim.validate_strong_causality():
@@ -211,10 +401,18 @@ class ProofValidator:
                 )
         
         # Check hypothesis status
-        if claim.origin_tag == OriginTag.HYP and claim.status == "UNKNOWN":
+        if claim.origin_tag == OriginTag.HYP and claim.status == "À-CLÔTURER":
             results["warnings"].append(
                 f"Claim {claim.claim_id} is hypothesis but not yet tested"
             )
+        
+        # Check for invalid status
+        if claim.status not in ["PASS", "FAIL", "À-CLÔTURER"]:
+            results["issues"].append(
+                f"Claim {claim.claim_id} has invalid status '{claim.status}' "
+                f"(must be PASS, FAIL, or À-CLÔTURER)"
+            )
+            results["valid"] = False
         
         return results
 
@@ -259,20 +457,30 @@ class ClaimLedger:
         """Get statistics about claims in the ledger"""
         total = len(self.claims)
         
-        by_status = {"PASS": 0, "FAIL": 0, "UNKNOWN": 0}
+        by_status = {"PASS": 0, "FAIL": 0, "À-CLÔTURER": 0}
         by_origin = {tag.value: 0 for tag in OriginTag}
         by_proof = {level.value: 0 for level in ProofLevel}
+        gaps_count = 0
+        gaps_with_closure = 0
         
         for claim in self.claims.values():
             by_status[claim.status] = by_status.get(claim.status, 0) + 1
             by_origin[claim.origin_tag.value] += 1
             by_proof[claim.proof_level.value] += 1
+            
+            if claim.origin_tag == OriginTag.GAP:
+                gaps_count += 1
+                if claim.gap_closure is not None:
+                    gaps_with_closure += 1
         
         return {
             "total_claims": total,
             "by_status": by_status,
             "by_origin": by_origin,
-            "by_proof_level": by_proof
+            "by_proof_level": by_proof,
+            "gaps_total": gaps_count,
+            "gaps_with_closure": gaps_with_closure,
+            "gaps_without_closure": gaps_count - gaps_with_closure
         }
     
     def to_markdown_table(self) -> str:

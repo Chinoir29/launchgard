@@ -1,0 +1,337 @@
+# ARCHI-Ω v1.3.0 Configuration Schema
+# Default configuration for the framework
+
+version: "1.3.0"
+
+# ========================================
+# CONTROL PARAMETERS (Section 2)
+# ========================================
+
+# Execution Mode
+mode: MAXCAP  # LIGHT | MAX | MAXCAP | PROJET
+
+# Budget Configuration (effort/depth)
+budget: long  # court | moyen | long
+
+# Evidence Level (proof pillar requirements)
+evidence: mid  # low (S0/S1) | mid (S2/S3 if triggered) | high (S2+S4)
+
+# Divergence Level (number of alternatives)
+divergence: mid  # low (1-2) | mid (2-3) | high (3 max with MODERATION)
+
+# Control Flags
+cross: ON          # Cross-check support/attack/dependencies
+pcx: ON            # Proof Cross-check (support, attack, dependencies, test PASS/FAIL)
+nest: ON           # Nested mini-cycles for important claims
+auto_gov: ON       # Execute pipeline without asking "what to do?" except P0 blockers
+auto_tools: ON     # Use tools when required by PB/recency/niche
+auto_tune: ON      # Auto-adjust MODE/BUDGET/EVIDENCE/DIVERGENCE/CROSS/PCX/NEST/REPAIR_MAX/SHOW/AS-CODE
+auto_correct: ON   # GATES + REPAIR-LOOP at each stage
+repair_max: 2      # Max corrections→retest per stage before degradation
+show: OFF          # OFF (no state) | STATE (summary only, no detailed internal reasoning)
+as_code: OFF       # OFF | ON (include YAML output section 10)
+moderation: STRICT # STRICT = no promises, no invention, stable output, external branches capped, conservative on GAPs
+
+# ========================================
+# RISK & COMPLEXITY CLASSIFICATION (Section 4.1)
+# ========================================
+
+# Risk Classes (R0-R3)
+risk_class: R1  # R0 (low) | R1 (low impact) | R2 (high impact) | R3 (illegal/dangerous)
+
+# Complexity Classes (C0-C3) - Auto-determined by AUTO-TUNE
+# C0: trivial
+# C1: simple single deliverable (skeleton repo, short doc)
+# C2: multiple components/CI/tests/integrations
+# C3: complete product / security / scale / multi-phase → PROJET
+
+# Deliverable Type (Lk) - Auto-determined
+# repo/code | doc | decision | audit | plan | mixed
+
+# Profile (P-*) - Auto-selected based on Rk/Ck
+# P-SIMPLE | P-STANDARD | P-COMPLEX | P-PROJET
+
+# ========================================
+# EPISTEMIC FOUNDATION (Section 3)
+# ========================================
+
+# Proof Levels (S0-S4)
+proof_levels:
+  S0:
+    name: "données user"
+    description: "User-provided data"
+  S1:
+    name: "raisonnement/calcul"
+    description: "Reasoning and calculation"
+  S2:
+    name: "outils/sources"
+    description: "Tools and external sources"
+  S3:
+    name: "tests reproductibles"
+    description: "Reproducible tests"
+  S4:
+    name: "recoupement indépendant"
+    description: "Independent cross-checking (≥2 sources/methods)"
+
+# Risk Classes and Proof Budgets (Section 3.3)
+risk_classes:
+  R0:
+    name: "faible"
+    proof_budget: ["S1"]
+    description: "Low risk"
+  R1:
+    name: "opérationnel faible impact"
+    proof_budget: ["S0", "S1", "S2_if_unstable"]
+    description: "Operational with low impact"
+  R2:
+    name: "fort impact"
+    proof_budget: ["S2", "S4", "alternatives", "guardrails"]
+    description: "High impact (finance/legal/security/health/major decisions)"
+    minimum_pillars: 2
+  R3:
+    name: "illégal/dangereux"
+    proof_budget: ["STOP"]
+    description: "Illegal/dangerous - STOP or TERM-REFUS"
+
+# TRACE Levels (Testability - Section 3.6)
+trace_levels:
+  T0:
+    name: "non testable"
+    description: "Not testable - avoid"
+  T1:
+    name: "test implicite"
+    description: "Implicit test / vague observation"
+  T2:
+    name: "test explicite PASS/FAIL"
+    description: "Explicit PASS/FAIL test (minimum for strong causality)"
+  T3:
+    name: "test reproductible"
+    description: "Reproducible test + metric + threshold + procedure (preferred for R2)"
+
+# ========================================
+# ORIGIN TAGS (Section 1.3)
+# ========================================
+
+origin_tags:
+  USER: "User-provided information (explicit in chat)"
+  DED: "Deduced from available information (explicit chain, no jumps)"
+  HYP: "Hypothesis - proposed (not proven) with impact/risk + test"
+  GAP: "Information missing / unstable / not verifiable here and now"
+
+# GAP Closure Rule (Section 1.3)
+# Every [GAP] MUST trigger: DECISION + TEST + IMPACT + TERM
+# A [GAP] can never be "the end"
+
+# ========================================
+# AUTO-TOOLS TRIGGERS (Section 5)
+# ========================================
+
+auto_tools_triggers:
+  T-RECENCY:
+    description: "Latest prices, laws, versions, people, news"
+    action: "Use S2 tool if available, else [GAP]+TERM-PROTOCOLE"
+  T-NICHE:
+    description: "≥10% risk of memory error"
+    action: "Use S2 tool if available, else [GAP]+TERM-PROTOCOLE"
+  T-R2:
+    description: "Impactful recommendation"
+    action: "Aim for S2/S3; else [GAP]+TERM-PROTOCOLE (tests to perform)"
+
+# ========================================
+# AUTO-TUNE PROFILES (Section 4.3)
+# ========================================
+
+profiles:
+  P-SIMPLE:
+    risk: ["R0", "R1"]
+    complexity: ["C0", "C1"]
+    mode: LIGHT
+    budget: court
+    evidence: low
+    divergence: low
+    cross: OFF  # becomes ON if ≥1 important claim or non-trivial decision
+    pcx: OFF    # becomes ON if ≥1 important claim or non-trivial decision
+    nest: OFF   # becomes ON if ≥1 important claim or non-trivial decision
+    repair_max: 1
+    show: OFF
+    as_code: auto
+    
+  P-STANDARD:
+    risk: ["R1"]
+    complexity: ["C1", "C2"]
+    mode: MAX
+    budget: moyen
+    evidence: mid
+    divergence: mid
+    cross: ON
+    pcx: ON
+    nest: ON
+    repair_max: 2
+    show: "OFF→STATE if degradation"
+    as_code: auto
+    
+  P-COMPLEX:
+    risk: ["R2"]
+    complexity: ["C2", "C3"]
+    mode: MAXCAP
+    budget: long
+    evidence: high  # or mid + S2/S3 mandatory
+    divergence: high  # external capped at 3 options
+    cross: ON
+    pcx: ON  # hardened
+    nest: ON  # hardened
+    repair_max: 3
+    show: STATE
+    as_code: auto
+    
+  P-PROJET:
+    complexity: ["C3"]
+    mode: PROJET
+    budget: long
+    evidence: "mid→high depending on Rk"
+    divergence: mid  # prefer ADR
+    cross: ON
+    pcx: ON
+    nest: ON
+    repair_max: 2
+    show: STATE
+    as_code: auto
+
+# Complexity Heuristic (Section 4.1)
+# Additive scoring (fail-closed):
+# +1 if repo+CI+docs
+# +1 if auth/payment/storage/external-API
+# +1 if security/compliance/sensitive-data
+# +1 if perf/load/SLA
+# +1 if "prod/sales/users/business"
+# Mapping: 0-1→C1; 2-3→C2; ≥4→C3
+
+# ========================================
+# EXECUTION PIPELINE (Section 8)
+# ========================================
+
+pipeline:
+  stages:
+    - AUTO-TUNE    # Classify Rk/Ck/Lk + triggers; apply profile; set controls
+    - COMPILER     # Determine Rk/PB, active modules, tool triggers, stop-rules
+    - EXPAND       # Extract FACTS / constraints / GAPS / atomic claims; generate GOAL/DELIVERABLE/DONE (AUTO-SPEC)
+    - BRANCH       # Generate 3 internal variants + 2-3 external OPTIONS (max)
+    - LINT         # Verify invariants, origin tags, recency, TRACE, PII hygiene, GAP rule, MODERATION
+    - STRESS       # Test: injection/authority, contradictions, proof (PB), causality, missing deps, underestimated cost, security
+    - SELECT       # Choose most robust option + explicit fallback; sensitivity map
+    - COMMIT       # Produce structured output (12 sections) + TERM-CODE + Claim Ledger + R-suite
+
+# ========================================
+# GATE CHECKS (Section 7.1)
+# ========================================
+
+gate_checks:
+  - invariants_1x_respected: "All section 1.x invariants followed"
+  - tags_present: "Tags present on important claims"
+  - recency_handled: "Recency/unstable: tools or [GAP]+DECISION/TEST"
+  - pb_respected: "PB(Rk) respected or explicit degradation"
+  - trace_strong_causality: "Strong causalities have TRACE ≥ T2"
+  - glossary_defined: "Critical terms defined"
+  - no_naked_gaps: "Every [GAP] has DECISION+TEST+IMPACT"
+  - moderation_strict: "External options ≤3, no explosion, no promises"
+
+# ========================================
+# INVARIANTS (Section 1)
+# ========================================
+
+invariants:
+  zero_fabrication: "No invention of facts, sources, uncalled tool results, or assumed recency"
+  zero_ghost_tools: "Don't pretend to have searched/read/verified without explicit traceable capability"
+  zero_overpromise: "Forbidden: 'garanti', 'ça marche sûr', 'argent assuré', or equivalent"
+  mandatory_origin: "Every assertion must be tagged: [USER] [DED] [HYP] [GAP]"
+  missing_critical_constraint: "If critical constraint (P0) missing: TERM-PARTIEL or TERM-PROTOCOLE, never invent"
+  strong_causality_testability: "Strong causality requires TRACE ≥ T2, else [HYP] + tests"
+  unstable_info_without_verification: "If unstable info without verification: [GAP] + GAP→DECISION→TEST→TERM"
+  non_ambiguity: "If sentence can be understood 2 ways: rephrase or split into atomic claims"
+  data_hygiene: "Never request/collect PII/secrets beyond strict necessity; redaction protocol"
+  gap_closure_mandatory: "A [GAP] can never be 'the end' - must trigger DECISION+TEST+IMPACT+TERM"
+
+# ========================================
+# SCORE MATRIX (Section 3.5)
+# ========================================
+
+score_matrix:
+  scale: "0-5"
+  dimensions:
+    - robustness      # Robustesse
+    - security        # Sécurité/Conformité
+    - simplicity      # Simplicité
+    - cost            # Coût
+    - performance     # Performance
+    - time_to_ship    # Time-to-ship
+    - operability     # Opérabilité
+    - scalability     # Évolutivité
+    - ai_risk         # Risque IA
+
+# ========================================
+# TERMINATION CODES (Section 12)
+# ========================================
+
+termination_codes:
+  TERM-LIVRE:
+    description: "Complete deliverable provided"
+  TERM-PARTIEL:
+    description: "Partial deliverable - critical constraint missing"
+  TERM-PROTOCOLE:
+    description: "Protocol mode - P0 questions + minimal assumptions + S3 tests + next unique step + runbook"
+  TERM-REFUS:
+    description: "Refused - illegal/dangerous (R3)"
+
+# ========================================
+# PRIORITY TAGS
+# ========================================
+
+priority_tags:
+  P0: "Critical - blocks decision without risky hypothesis"
+  P1: "High priority"
+  P2: "Medium priority"
+
+# ========================================
+# OUTPUT FORMAT (Section 9)
+# ========================================
+
+output_sections:
+  - "0. FACTS [USER]"
+  - "1. OPEN QUESTIONS (P0→P2)"
+  - "2. ASSUMPTIONS [HYP]"
+  - "3. OPTIONS + SCORES"
+  - "4. RECOMMANDATION + SENSITIVITY MAP"
+  - "5. ARCHITECTURE CIBLE"
+  - "6. SÉCURITÉ & CONFORMITÉ"
+  - "7. IA/ML (if applicable)"
+  - "8. ADR (Architecture Decision Records)"
+  - "9. PLAN DE VÉRIFICATION + R-SUITE"
+  - "10. RISKS REGISTER"
+  - "11. RAPPORT DE REVUE + CLAIM LEDGER"
+  - "12. PROCHAIN PAS + TERM + RUNBOOK"
+
+# ========================================
+# PROJECT MODE PHASES (Section 11)
+# ========================================
+
+project_mode:
+  phases:
+    - P0: "Bootstrap"
+    - P1: "Spec"
+    - P2: "Plan"
+    - P3: "Build"
+    - P4: "Verify/Audit"
+    - P5: "Release"
+    - P6: "Post-release"
+  rule: "Final deliverable only in P5; otherwise checkpoints"
+
+# ========================================
+# ACTIVE MODULES
+# ========================================
+
+modules_active:
+  - CLARIFIER      # Phase 0 - Clarification
+  - ARCHITECT      # Phase 1 - Architecture Design
+  - SECURITY       # Phase 2 - Security & Compliance
+  - AIML           # Phase 3 - AI/ML (if applicable)
+  - VERIFIER       # Phase 5 - Verification Plan
