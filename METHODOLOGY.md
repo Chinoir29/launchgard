@@ -5,6 +5,7 @@ This document explains the methodological principles behind LaunchGuard.
 ## Overview
 
 ARCHI-Ω v1.2 is a documentation quality framework that emphasizes:
+
 - Deterministic, repeatable quality gates
 - Claim accountability and traceability
 - Fail-closed approach to violations
@@ -22,6 +23,7 @@ ARCHI-Ω v1.2 is a documentation quality framework that emphasizes:
 - Baseline support allows controlled migration
 
 **Why fail-closed?**
+
 - Prevents gradual quality degradation
 - Makes quality non-negotiable
 - Catches issues before production
@@ -32,17 +34,20 @@ ARCHI-Ω v1.2 is a documentation quality framework that emphasizes:
 Absolutist claims create legal risk and damage credibility:
 
 ❌ **Bad:**
+
 - "guaranteed to work"
 - "unique in the world"
 - "100% secure"
 - "never fails"
 
 ✅ **Good:**
+
 - "designed to provide..." [DED]
 - "users report..." [USER]
 - "we believe this may..." [HYP]
 
 **Why avoid overpromises?**
+
 - Reduces legal exposure
 - Builds realistic expectations
 - Improves credibility
@@ -51,6 +56,7 @@ Absolutist claims create legal risk and damage credibility:
 ### 3. Claim Ledger
 
 Every factual claim must be:
+
 - **Tagged** with [USER]/[DED]/[HYP]/[UNKNOWN]
 - **Tracked** in the claim ledger
 - **Sourced** if it contains recency/instability triggers
@@ -58,23 +64,28 @@ Every factual claim must be:
 **Tag meanings:**
 
 **[USER]** - User-reported claim
+
 - Testimonials, feedback, survey results
 - Example: "[USER] 85% of users report faster load times"
 
 **[DED]** - Deduced claim
+
 - Logically derived from technical facts
 - Example: "[DED] Uses AES-256 encryption for data at rest"
 
 **[HYP]** - Hypothesis claim
+
 - Belief or theory, not yet proven
 - Example: "[HYP] This approach may reduce latency by 30%"
 
 **[UNKNOWN]** - Unknown veracity
+
 - Claim source/status unclear
 - Requires investigation
 - Example: "[UNKNOWN] Industry standard practice"
 
 **Why tag claims?**
+
 - Creates accountability trail
 - Enables claim audits
 - Distinguishes facts from opinions
@@ -85,12 +96,14 @@ Every factual claim must be:
 **R-SUITE** = Rules Suite for Uniform Integrity Testing & Enforcement
 
 Each rule has:
+
 - Binary pass/fail outcome
 - No subjective interpretation
 - Deterministic behavior
 - Fixture-based tests
 
 **Example rule structure:**
+
 ```yaml
 - id: 'OVER-001'
   name: 'Absolute claims'
@@ -103,6 +116,7 @@ Each rule has:
 ```
 
 **Why PASS/FAIL?**
+
 - No ambiguity
 - Automatable
 - Regression-proof
@@ -113,17 +127,20 @@ Each rule has:
 LaunchGuard **intentionally avoids** external APIs:
 
 ❌ Does not:
+
 - Look up facts on Wikipedia
 - Verify claims via APIs
 - Check prices/dates externally
 
 ✅ Instead:
+
 - Flags recency triggers as needing sources
 - Requires teams to provide citations
 - Remains deterministic and fast
 - Avoids API dependencies
 
 **Why no web checking?**
+
 - Deterministic results (no API failures)
 - Fast local execution
 - No rate limits
@@ -135,14 +152,17 @@ LaunchGuard **intentionally avoids** external APIs:
 Certain content becomes outdated quickly:
 
 **Recency triggers:**
+
 - Years: 2024, 2025, 2026, 2027
 - Temporal: latest, current, recent, newest
 
 **Instability triggers:**
+
 - Pricing: price, cost, $X
 - Legal: law, regulation, compliance
 
 **What happens?**
+
 - In **max mode**: Flagged as warnings
 - Team must either:
   - Add a [TAG] with source
@@ -150,6 +170,7 @@ Certain content becomes outdated quickly:
   - Baseline the violation
 
 **Why flag recency?**
+
 - Docs rot over time
 - Prevents outdated claims
 - Encourages maintenance
@@ -176,6 +197,7 @@ launchgard --baseline .launchgard-baseline.json "**/*.md"
 ```
 
 Baselined violations are **ignored**, allowing teams to:
+
 - Adopt LaunchGuard incrementally
 - Fix issues over time
 - Prevent new violations
@@ -184,6 +206,7 @@ Baselined violations are **ignored**, allowing teams to:
 ### Baseline Philosophy
 
 Baselines are **temporary migration tools**:
+
 - Not a permanent ignore list
 - Should be reduced over time
 - New code must be clean
@@ -228,24 +251,28 @@ Monitors documentation health.
 ## Rationale: Why These Rules?
 
 ### Why block "guaranteed"?
+
 - Creates legal liability
 - Sets unrealistic expectations
 - Damages trust when things fail
 - Alternative: "designed to provide"
 
 ### Why flag years like "2026"?
+
 - Content becomes outdated
 - Requires maintenance
 - May mislead users
 - Alternative: Add "as of [date]" with source
 
 ### Why detect secrets?
+
 - Prevents credential leaks
 - Protects security
 - Compliance requirement
 - No false sense of security
 
 ### Why require claim tags?
+
 - Creates audit trail
 - Distinguishes fact from opinion
 - Surfaces unsourced claims
@@ -253,25 +280,27 @@ Monitors documentation health.
 
 ## Comparison to Other Tools
 
-| Feature | LaunchGuard | Linters | Vale | Grammarly |
-|---------|-------------|---------|------|-----------|
-| Claim tagging | ✅ | ❌ | ❌ | ❌ |
-| Overpromise detection | ✅ | ❌ | Partial | ❌ |
-| Secret detection | ✅ | ❌ | ❌ | ❌ |
-| Deterministic output | ✅ | ✅ | ✅ | ❌ |
-| Fail-closed design | ✅ | Partial | Partial | ❌ |
-| Claim ledger | ✅ | ❌ | ❌ | ❌ |
-| Baseline support | ✅ | Rare | ❌ | ❌ |
+| Feature               | LaunchGuard | Linters | Vale    | Grammarly |
+| --------------------- | ----------- | ------- | ------- | --------- |
+| Claim tagging         | ✅          | ❌      | ❌      | ❌        |
+| Overpromise detection | ✅          | ❌      | Partial | ❌        |
+| Secret detection      | ✅          | ❌      | ❌      | ❌        |
+| Deterministic output  | ✅          | ✅      | ✅      | ❌        |
+| Fail-closed design    | ✅          | Partial | Partial | ❌        |
+| Claim ledger          | ✅          | ❌      | ❌      | ❌        |
+| Baseline support      | ✅          | Rare    | ❌      | ❌        |
 
 ## Limitations
 
 LaunchGuard **does not**:
+
 - Verify factual accuracy (no web lookups)
 - Check grammar/spelling
 - Analyze code quality
 - Replace human review
 
 LaunchGuard **does**:
+
 - Enforce structural quality
 - Detect patterns of risk
 - Create accountability
@@ -280,6 +309,7 @@ LaunchGuard **does**:
 ## Future Enhancements
 
 Potential v2.0 features:
+
 - Custom rule definitions
 - Source citation validation
 - Claim confidence scoring
@@ -294,4 +324,4 @@ ARCHI-Ω v1.2 creates **accountable, measurable, fail-closed** documentation qua
 
 ---
 
-*For questions or feedback, open an issue on GitHub.*
+_For questions or feedback, open an issue on GitHub._

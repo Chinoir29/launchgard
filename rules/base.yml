@@ -50,7 +50,7 @@ rules:
         - 'newest'
         - 'price'
         - 'cost'
-        - '\$[0-9]'
+        - "\\$[0-9]"
         - 'law'
         - 'legal'
         - 'regulation'
@@ -63,12 +63,12 @@ rules:
       severity: 'error'
       enabled: true
       patterns:
-        - 'ghp_[a-zA-Z0-9]{36}'
-        - 'gho_[a-zA-Z0-9]{36}'
-        - 'ghu_[a-zA-Z0-9]{36}'
-        - 'ghs_[a-zA-Z0-9]{36}'
-        - 'ghr_[a-zA-Z0-9]{36}'
-        - 'github_pat_[a-zA-Z0-9_]{82}'
+        - 'ghp_[a-zA-Z0-9]{30,}'
+        - 'gho_[a-zA-Z0-9]{30,}'
+        - 'ghu_[a-zA-Z0-9]{30,}'
+        - 'ghs_[a-zA-Z0-9]{30,}'
+        - 'ghr_[a-zA-Z0-9]{30,}'
+        - 'github_pat_[a-zA-Z0-9_]{60,}'
 
     - id: 'SEC-002'
       name: 'OpenAI API keys'
@@ -76,8 +76,8 @@ rules:
       severity: 'error'
       enabled: true
       patterns:
-        - 'sk-[a-zA-Z0-9]{48}'
-        - 'sk-proj-[a-zA-Z0-9]{48}'
+        - 'sk-[a-zA-Z0-9]{40,}'
+        - 'sk-proj-[a-zA-Z0-9]{40,}'
 
     - id: 'SEC-003'
       name: 'AWS keys'
@@ -94,6 +94,6 @@ rules:
       severity: 'error'
       enabled: true
       patterns:
-        - 'api[_-]?key["\']?\s*[:=]\s*["\'][a-zA-Z0-9]{20,}["\']'
-        - 'api[_-]?secret["\']?\s*[:=]\s*["\'][a-zA-Z0-9]{20,}["\']'
-        - 'password["\']?\s*[:=]\s*["\'][^"\']{8,}["\']'
+        - "api[_-]?key[\"']?\\s*[:=]\\s*[\"'][a-zA-Z0-9]{20,}[\"']"
+        - "api[_-]?secret[\"']?\\s*[:=]\\s*[\"'][a-zA-Z0-9]{20,}[\"']"
+        - "password[\"']?\\s*[:=]\\s*[\"'][^\"']{8,}[\"']"

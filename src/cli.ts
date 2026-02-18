@@ -5,14 +5,13 @@ import { hideBin } from 'yargs/helpers';
 import { Scanner } from './scanner.js';
 import { Reporter } from './reporter.js';
 import { BaselineManager } from './baseline.js';
-import * as fs from 'fs';
 
 interface CliArguments {
   mode: 'light' | 'max';
-  files: string[];
+  _: (string | number)[];
   baseline?: string;
   'create-baseline'?: string;
-  output?: string;
+  output: string;
   verbose?: boolean;
 }
 
@@ -82,9 +81,7 @@ async function main() {
       const baseline = baselineManager.createBaseline(report.violations);
       baselineManager.saveBaseline(baseline, argv['create-baseline']);
       console.log(`✅ Baseline created: ${argv['create-baseline']}`);
-      console.log(
-        `   Captured ${baseline.violations.length} violations to ignore in future scans`
-      );
+      console.log(`   Captured ${baseline.violations.length} violations to ignore in future scans`);
     }
 
     // Write reports

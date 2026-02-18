@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { ScanReport } from './types/index.js';
+import { ScanReport, Violation } from './types/index.js';
 
 export class Reporter {
   generateMarkdown(report: ScanReport): string {
@@ -116,8 +116,8 @@ export class Reporter {
     fs.writeFileSync(mdPath, this.generateMarkdown(report), 'utf-8');
   }
 
-  private groupByFile(violations: any[]): Record<string, any[]> {
-    const grouped: Record<string, any[]> = {};
+  private groupByFile(violations: Violation[]): Record<string, Violation[]> {
+    const grouped: Record<string, Violation[]> = {};
     for (const violation of violations) {
       if (!grouped[violation.file]) {
         grouped[violation.file] = [];

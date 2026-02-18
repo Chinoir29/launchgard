@@ -53,33 +53,43 @@ jobs:
 ## Features
 
 ### 🏷️ Claim Tagging
+
 Enforces that factual claims are tagged with one of:
+
 - **[USER]** - User-reported claim (testimonial, feedback)
 - **[DED]** - Deduced claim (logically derived from facts)
 - **[HYP]** - Hypothesis claim (believed but not proven)
 - **[UNKNOWN]** - Claim with unknown veracity
 
 ### 🚫 Overpromise Detection
+
 Blocks absolutist language that overpromises:
+
 - "guaranteed", "unique in the world", "revolutionary"
 - "100% secure", "never fails", "always works"
 - "perfectly", "best in class", "game-changing"
 
 ### ⚠️ Recency/Instability Triggers
+
 Flags content that may become outdated:
+
 - Years (2024, 2025, 2026, 2027)
 - Temporal words (latest, current, recent, newest)
 - Volatile data (price, cost, law, legal, regulation)
 
 ### 🔒 Secret Detection
+
 Detects exposed credentials:
-- GitHub tokens (ghp_, gho_, ghu_, ghs_, ghr_)
+
+- GitHub tokens (ghp*, gho*, ghu*, ghs*, ghr\_)
 - OpenAI API keys (sk-, sk-proj-)
 - AWS access keys (AKIA...)
 - Generic API keys and passwords
 
 ### 📊 Deterministic Reports
+
 Generates consistent, sortable output:
+
 - **report.json** - Machine-readable JSON report
 - **report.md** - Human-readable Markdown report
 - Claim ledger tracking all tagged claims
@@ -87,11 +97,13 @@ Generates consistent, sortable output:
 ### 🎯 Scan Modes
 
 **Light Mode** (default)
+
 - Checks: Secrets + Overpromises
 - Fast, focused on critical violations
 - Exit code 1 only for errors
 
 **Max Mode**
+
 - Checks: Secrets + Overpromises + Recency + Claim Tagging
 - Comprehensive scanning
 - Warnings for missing sources and claim tags
@@ -113,33 +125,43 @@ launchgard --baseline .launchgard-baseline.json "**/*.md"
 LaunchGuard implements the ARCHI-Ω v1.2 methodology for documentation quality:
 
 ### Fail-Closed Philosophy
+
 **By default, quality gates fail unless explicitly passing.** This ensures:
+
 - No false sense of security
 - Violations are caught before production
 - Teams must address issues, not ignore warnings
 
 ### No Overpromises
+
 Absolutist claims damage credibility and create legal/reputation risk. LaunchGuard:
+
 - Blocks superlatives without evidence
 - Flags "guaranteed" and "100%" language
 - Enforces measured, accurate claims
 
 ### Claim Ledger
+
 Every factual claim must be tagged and tracked:
+
 - Creates accountability trail
 - Enables audit of documentation accuracy
 - Surfaces claims needing sources
 - Distinguishes user feedback from deduced facts
 
 ### PASS/FAIL Tests (R-SUITE)
+
 Each rule has deterministic pass/fail criteria:
+
 - **R-SUITE** = Rules Suite for Uniform Integrity Testing & Enforcement
 - Binary outcomes (no subjective "code smells")
 - Fixture tests prove rule behavior
 - Regression protection
 
 ### No Web Fact-Checking
+
 LaunchGuard intentionally avoids web lookups:
+
 - No API dependencies or rate limits
 - Deterministic, repeatable results
 - Fast local execution
@@ -177,6 +199,7 @@ Examples:
 ## Example Output
 
 ### Console Output
+
 ```
 ═══════════════════════════════════════════════════════════
   LaunchGuard Scan Results
@@ -242,6 +265,7 @@ MIT
 ## Contributing
 
 Contributions welcome! Please:
+
 1. Fork the repository
 2. Create a feature branch
 3. Add tests for new functionality
