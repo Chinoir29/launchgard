@@ -32,7 +32,7 @@ def check_epistemic():
     print("\nChecking epistemic foundation...")
     try:
         from archi_omega.epistemic.foundation import (
-            ProofLevel, RiskClass, Claim, OriginTag, ProofLevel, TestabilityLevel
+            ProofLevel, RiskClass, Claim, OriginTag, TestabilityLevel
         )
         
         # Create a test claim

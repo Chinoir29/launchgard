@@ -15,7 +15,7 @@ from .epistemic.foundation import OriginTag, ProofLevel, TestabilityLevel, Claim
 
 
 def load_user_input(input_file: Path) -> ProjectContext:
-    """Load user input from YAML or markdown file"""
+    """Load user input from YAML file"""
     context = ProjectContext()
     
     if input_file.suffix in ['.yaml', '.yml']:

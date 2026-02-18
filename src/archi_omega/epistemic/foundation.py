@@ -10,7 +10,7 @@ This module implements the epistemic foundation of the ARCHI-Ω framework:
 """
 
 from enum import Enum
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 
 
@@ -229,7 +229,7 @@ class ClaimLedger:
         """Add a claim to the ledger"""
         self.claims[claim.claim_id] = claim
     
-    def get_claim(self, claim_id: str) -> Claim:
+    def get_claim(self, claim_id: str) -> Optional[Claim]:
         """Get a claim by ID"""
         return self.claims.get(claim_id)
     
