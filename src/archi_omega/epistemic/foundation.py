@@ -1,5 +1,5 @@
 """
-ARCHI-Ω v1.2 - Epistemic Foundation
+ARCHI-Ω v1.2.1 - Epistemic Foundation
 
 This module implements the epistemic foundation of the ARCHI-Ω framework:
 - Proof levels (S0-S4)
@@ -44,7 +44,7 @@ class OriginTag(Enum):
     USER = "USER"  # User-provided information
     DED = "DED"  # Deduced from available information
     HYP = "HYP"  # Hypothesis - needs testing
-    UNKNOWN = "UNKNOWN"  # Unknown - requires verification
+    GAP = "GAP"  # Information gap - requires decision, test, and term
 
 
 @dataclass
@@ -102,8 +102,9 @@ class Claim:
     proof_level: ProofLevel
     dependencies: List[str]  # List of claim IDs this depends on
     test_description: str
-    status: str  # "PASS", "FAIL", "UNKNOWN"
+    status: str  # "PASS", "FAIL", "À-CLÔTURER"
     testability: TestabilityLevel = TestabilityLevel.T2
+    gap_decision: Optional[str] = None  # Conservative decision for GAP tags
     
     def validate_strong_causality(self) -> bool:
         """
@@ -188,11 +189,24 @@ class ProofValidator:
         }
         
         # Check origin tag
-        if claim.origin_tag == OriginTag.UNKNOWN and risk_class in [RiskClass.R2, RiskClass.R3]:
+        if claim.origin_tag == OriginTag.GAP and risk_class in [RiskClass.R2, RiskClass.R3]:
             results["issues"].append(
-                f"Claim {claim.claim_id} has UNKNOWN origin for high-risk ({risk_class.value})"
+                f"Claim {claim.claim_id} has GAP origin for high-risk ({risk_class.value})"
             )
             results["valid"] = False
+        
+        # Check GAP rule: must have decision and test
+        if claim.origin_tag == OriginTag.GAP:
+            if not claim.gap_decision:
+                results["issues"].append(
+                    f"Claim {claim.claim_id} has GAP tag but no conservative decision"
+                )
+                results["valid"] = False
+            if not claim.test_description:
+                results["issues"].append(
+                    f"Claim {claim.claim_id} has GAP tag but no test to close the gap"
+                )
+                results["valid"] = False
         
         # Check testability for strong causality
         if not claim.validate_strong_causality():
@@ -211,7 +225,7 @@ class ProofValidator:
                 )
         
         # Check hypothesis status
-        if claim.origin_tag == OriginTag.HYP and claim.status == "UNKNOWN":
+        if claim.origin_tag == OriginTag.HYP and claim.status == "À-CLÔTURER":
             results["warnings"].append(
                 f"Claim {claim.claim_id} is hypothesis but not yet tested"
             )
@@ -259,7 +273,7 @@ class ClaimLedger:
         """Get statistics about claims in the ledger"""
         total = len(self.claims)
         
-        by_status = {"PASS": 0, "FAIL": 0, "UNKNOWN": 0}
+        by_status = {"PASS": 0, "FAIL": 0, "À-CLÔTURER": 0}
         by_origin = {tag.value: 0 for tag in OriginTag}
         by_proof = {level.value: 0 for level in ProofLevel}
         

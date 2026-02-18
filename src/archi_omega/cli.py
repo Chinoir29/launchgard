@@ -1,5 +1,5 @@
 """
-ARCHI-Ω v1.2 - Command Line Interface
+ARCHI-Ω v1.2.1 - Command Line Interface
 
 Simple CLI for running the ARCHI-Ω framework.
 """
@@ -117,7 +117,7 @@ def format_deliverable_markdown(deliverable: Dict[str, Any]) -> str:
         "",
         "## 12) TERMINATION",
         "",
-        f"**TERM:** {deliverable.get('termination', 'UNKNOWN')}",
+        f"**TERM:** {deliverable.get('termination', 'À-CLÔTURER')}",
         ""
     ])
     
@@ -210,7 +210,7 @@ def main():
     else:
         print(output)
     
-    print(f"\nTermination: {deliverable.get('termination', 'UNKNOWN')}", file=sys.stderr)
+    print(f"\nTermination: {deliverable.get('termination', 'À-CLÔTURER')}", file=sys.stderr)
     return 0
 
 

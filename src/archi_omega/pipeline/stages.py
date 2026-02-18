@@ -1,5 +1,5 @@
 """
-ARCHI-Ω v1.2 - Pipeline Modules
+ARCHI-Ω v1.2.1 - Pipeline Modules
 
 This module implements the execution pipeline:
 COMPILER → EXPAND → BRANCH → LINT → STRESS → SELECT → COMMIT
@@ -42,7 +42,7 @@ class ProjectContext:
     risk_class: Optional[RiskClass] = None
     proof_budget: Optional[ProofBudget] = None
     facts: List[str] = field(default_factory=list)
-    unknowns: List[str] = field(default_factory=list)
+    gaps: List[Dict[str, Any]] = field(default_factory=list)  # Changed from unknowns
     assumptions: List[Dict[str, Any]] = field(default_factory=list)
     options: List[Dict[str, Any]] = field(default_factory=list)
     recommendation: Optional[Dict[str, Any]] = None
@@ -117,19 +117,19 @@ class Compiler:
 
 class Expander:
     """
-    EXPAND stage: Extraire FACTS / contraintes / unknowns / claims atomiques
+    EXPAND stage: Extraire FACTS / contraintes / GAPS / claims atomiques
     """
     
     @staticmethod
     def expand(context: ProjectContext) -> Dict[str, Any]:
         """
-        Extract facts, constraints, unknowns from context.
+        Extract facts, constraints, gaps from context.
         
         Returns:
-            Dict with facts, constraints, unknowns, atomic_claims
+            Dict with facts, constraints, gaps, atomic_claims
         """
         facts = []
-        unknowns = []
+        gaps = []
         constraints = []
         
         # Extract facts from user input
@@ -138,23 +138,37 @@ class Expander:
                 if value:
                     facts.append(f"{key}: {value} [USER]")
                 else:
-                    unknowns.append(f"{key} not specified")
+                    gap = {
+                        "id": f"GAP-{len(gaps)+1}",
+                        "description": f"{key} not specified",
+                        "decision": "Assume default values or request from user",
+                        "test": f"Verify {key} specification with stakeholder",
+                        "impact": "May affect system sizing and architecture"
+                    }
+                    gaps.append(gap)
         
         if context.constraints:
             for key, value in context.constraints.items():
                 if value:
                     constraints.append(f"{key}: {value} [USER]")
                 else:
-                    unknowns.append(f"Constraint {key} not specified")
+                    gap = {
+                        "id": f"GAP-{len(gaps)+1}",
+                        "description": f"Constraint {key} not specified",
+                        "decision": "Assume no constraint or request clarification",
+                        "test": f"Confirm {key} constraint with stakeholder",
+                        "impact": "May affect technology choices and implementation"
+                    }
+                    gaps.append(gap)
         
         # Store in context
         context.facts = facts
-        context.unknowns = unknowns
+        context.gaps = gaps
         
         return {
             "facts": facts,
             "constraints": constraints,
-            "unknowns": unknowns,
+            "gaps": gaps,
             "atomic_claims": []  # To be populated by claim extraction
         }
 
@@ -279,11 +293,20 @@ class Stressor:
         # Check proof adequacy against proof budget
         if context.proof_budget and context.claim_ledger.claims:
             for claim in context.claim_ledger.claims.values():
-                if claim.origin_tag == OriginTag.UNKNOWN and context.risk_class == RiskClass.R2:
+                if claim.origin_tag == OriginTag.GAP and context.risk_class == RiskClass.R2:
                     tests["proof_adequacy"]["passed"] = False
                     tests["proof_adequacy"]["issues"].append(
-                        f"Claim {claim.claim_id} has UNKNOWN origin for R2 project"
+                        f"Claim {claim.claim_id} has GAP origin for R2 project - needs decision and test"
                     )
+                    # Check GAP rule compliance
+                    if not claim.gap_decision:
+                        tests["proof_adequacy"]["issues"].append(
+                            f"Claim {claim.claim_id} with GAP tag missing conservative decision"
+                        )
+                    if not claim.test_description:
+                        tests["proof_adequacy"]["issues"].append(
+                            f"Claim {claim.claim_id} with GAP tag missing test to close gap"
+                        )
         
         # Check for untested causality
         for claim in context.claim_ledger.claims.values():
@@ -364,17 +387,18 @@ class Committer:
         
         if context.risk_class == RiskClass.R3:
             term_code = TerminationCode.TERM_REFUS
-        elif context.unknowns:
-            # Check if unknowns are critical (P0)
-            critical_unknowns = [u for u in context.unknowns if "not specified" in u]
-            if critical_unknowns:
+        elif context.gaps:
+            # Check if gaps are critical (P0)
+            critical_gaps = [g for g in context.gaps if "not specified" in g.get("description", "")]
+            if critical_gaps:
                 term_code = TerminationCode.TERM_PROTOCOLE
         elif not context.recommendation:
             term_code = TerminationCode.TERM_PARTIEL
         
         deliverable = {
             "facts": context.facts,
-            "open_questions": context.unknowns,
+            "open_questions": [],  # Deprecated - use gaps instead
+            "gaps": context.gaps,  # New GAP section with decision, test, impact
             "assumptions": context.assumptions,
             "options": context.options,
             "recommendation": context.recommendation,

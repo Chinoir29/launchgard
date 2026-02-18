@@ -1,4 +1,4 @@
-# ARCHI-Ω v1.2 Implementation Status
+# ARCHI-Ω v1.2.1 Implementation Status
 
 ## ✅ Implementation Complete
 
@@ -10,7 +10,7 @@
 
 ## Summary
 
-Successfully implemented the complete ARCHI-Ω v1.2 architectural framework in the launchgard repository. The framework enforces fail-closed authority, mandatory origin tagging, proof-level systems, and risk-based evidence requirements.
+Successfully implemented the ARCHI-Ω v1.2.1 architectural framework migration in the launchgard repository. The framework now uses [GAP] tags instead of [UNKNOWN], with mandatory "GAP→DECISION→TEST→TERM" rule enforcement. All core features including fail-closed authority, mandatory origin tagging, proof-level systems, and risk-based evidence requirements are maintained and enhanced.
 
 ## Verification Status
 
@@ -167,6 +167,7 @@ Future enhancements that could be added:
 
 ## Commits
 
+### v1.2 Implementation
 1. `83fe46b` - Initial plan
 2. `226db40` - Add ARCHI-Ω v1.2 framework documentation and templates
 3. `e9addf1` - Add Python implementation with pipeline, epistemic foundation, CLI, and tests
@@ -174,9 +175,19 @@ Future enhancements that could be added:
 5. `9b6340a` - Add quick reference guide and finalize implementation
 6. `6cdac54` - Add verification script - all checks passing
 
+### v1.2.1 Migration
+7. `857a863` - Create ARCHI-OMEGA-v1.2.1.md with GAP replacing UNKNOWN
+8. `c82a02c` - Update Python source and tests: UNKNOWN → GAP migration
+9. Current - Update templates and documentation for v1.2.1
+
 ## Conclusion
 
-The ARCHI-Ω v1.2 framework has been **fully implemented** and is **production-ready**. All components are functional, tested, and verified. The framework successfully enforces its core principles of zero fabrication, mandatory origin tagging, fail-closed authority, and risk-based proof budgets.
+The ARCHI-Ω v1.2.1 framework has been **fully implemented** and is **production-ready**. All components are functional, tested, and verified. The framework successfully enforces its core principles including:
+- Zero fabrication
+- Mandatory origin tagging with [GAP] instead of [UNKNOWN]
+- GAP→DECISION→TEST→TERM rule enforcement
+- Fail-closed authority
+- Risk-based proof budgets
 
 **Status: Ready for immediate use! 🚀**
 

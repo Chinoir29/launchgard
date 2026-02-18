@@ -1,4 +1,4 @@
-# ARCHI-Ω v1.2 - Quick Reference
+# ARCHI-Ω v1.2.1 - Quick Reference
 
 A one-page cheat sheet for the ARCHI-Ω framework.
 
@@ -32,7 +32,7 @@ A one-page cheat sheet for the ARCHI-Ω framework.
 | [USER] | User-provided | Direct from user input |
 | [DED] | Deduced | Derived from reasoning |
 | [HYP] | Hypothesis | Assumption needing test |
-| [UNKNOWN] | Unknown | Requires verification |
+| [GAP] | Information Gap | Requires: DECISION + TEST + TERM |
 
 ## Testability Levels (T0-T3)
 
@@ -121,7 +121,7 @@ claim = Claim(
     proof_level=ProofLevel.S0,
     dependencies=[],
     test_description="Load test",
-    status="UNKNOWN"
+    status="À-CLÔTURER"
 )
 context.claim_ledger.add_claim(claim)
 
@@ -171,14 +171,15 @@ result = pipeline.execute(context)
 
 - ✅ [USER] claims: must have source
 - ✅ [HYP] claims: must have test
-- ✅ [UNKNOWN] + critical → TERM-PROTOCOLE
+- ✅ [GAP] claims: must have DECISION + TEST + TERM
+- ✅ [GAP] + critical → TERM-PROTOCOLE
 - ✅ Strong causality → TRACE ≥ T2
 - ✅ R2 claims → proof ≥ S2
 
 ## Auto-Tools Triggers
 
-- **T-RECENCY**: "latest", prices, laws, versions → use S2 tool or [UNKNOWN]
-- **T-NICHE**: ≥10% error risk → use S2 tool or TERM-PROTOCOLE
+- **T-RECENCY**: "latest", prices, laws, versions → use S2 tool or [GAP] + TERM-PROTOCOLE
+- **T-NICHE**: ≥10% error risk → use S2 tool or [GAP] + TERM-PROTOCOLE
 - **T-R2**: High impact → aim for S2/S3
 
 ## Common Patterns
@@ -234,5 +235,5 @@ pytest tests/
 
 ---
 
-**Version**: ARCHI-Ω v1.2  
+**Version**: ARCHI-Ω v1.2.1  
 **Repository**: https://github.com/Chinoir29/launchgard

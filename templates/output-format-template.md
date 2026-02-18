@@ -1,4 +1,4 @@
-# ARCHI-Ω v1.2 - Output Format Template
+# ARCHI-Ω v1.2.1 - Output Format Template
 
 **Project:** [Project Name]
 **Date:** YYYY-MM-DD
@@ -540,8 +540,8 @@ Collecte → Qualité → Features → Train → Eval → Deploy
 
 | Criterion | Test | Target | Status |
 |-----------|------|--------|--------|
-| [Criterion 1] | [How tested] | PASS if [condition] | PASS/FAIL/UNKNOWN |
-| [Criterion 2] | [How tested] | PASS if [condition] | PASS/FAIL/UNKNOWN |
+| [Criterion 1] | [How tested] | PASS if [condition] | PASS/FAIL/À-CLÔTURER |
+| [Criterion 2] | [How tested] | PASS if [condition] | PASS/FAIL/À-CLÔTURER |
 
 ### ⚠️ R-SUITE (Régression) - MANDATORY
 
@@ -627,18 +627,18 @@ Low     |  L  |  L  |  M  |
 
 | Claim-ID | Claim Text | Origin Tag | S-Level | Dependencies | Test | Status |
 |----------|------------|------------|---------|--------------|------|--------|
-| C001 | [Claim] | [USER/DED/HYP/UNKNOWN] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/UNKNOWN |
-| C002 | [Claim] | [USER/DED/HYP/UNKNOWN] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/UNKNOWN |
-| C003 | [Claim] | [USER/DED/HYP/UNKNOWN] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/UNKNOWN |
+| C001 | [Claim] | [USER/DED/HYP/GAP] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/À-CLÔTURER |
+| C002 | [Claim] | [USER/DED/HYP/GAP] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/À-CLÔTURER |
+| C003 | [Claim] | [USER/DED/HYP/GAP] | S0-S4 | [IDs] | [Test description] | PASS/FAIL/À-CLÔTURER |
 
 **Summary:**
 - Total Claims: X
-- By Status: PASS: X, FAIL: Y, UNKNOWN: Z
-- By Origin: [USER]: W, [DED]: X, [HYP]: Y, [UNKNOWN]: Z
+- By Status: PASS: X, FAIL: Y, À-CLÔTURER: Z
+- By Origin: [USER]: W, [DED]: X, [HYP]: Y, [GAP]: Z
 - By S-Level: S0: A, S1: B, S2: C, S3: D, S4: E
 
 **Critical Open Items:**
-1. [Any critical UNKNOWN or FAIL claims]
+1. [Any critical GAP or FAIL claims]
 
 ---
 
@@ -724,7 +724,7 @@ termination: TERM-LIVRÉ
 
 ---
 
-**End of ARCHI-Ω v1.2 Deliverable**
+**End of ARCHI-Ω v1.2.1 Deliverable**
 
 **Version:** 1.0
 **Generated:** YYYY-MM-DD HH:MM:SS
