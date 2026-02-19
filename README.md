@@ -145,9 +145,19 @@ Every deliverable includes (in order):
 - Pipeline assumes human review of generated options
 - Does not enforce ARCHI-Ω principles on external content automatically
 
+### Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Security
+
+For security issues, please see our [Security Policy](SECURITY.md).
+
 ### License
 
-[To be determined]
+MIT License - see [LICENSE](LICENSE) file for details.
+
+Copyright (c) 2026 launchgard
 
 ---
 
