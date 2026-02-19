@@ -59,8 +59,11 @@ representative at an online or offline event.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at
-[INSERT CONTACT METHOD].
+reported to the community leaders responsible for enforcement through:
+
+1. GitHub repository issues (for non-urgent matters)
+2. Private message to repository maintainers
+3. GitHub Security Advisory (for sensitive matters)
 
 All complaints will be reviewed and investigated promptly and fairly.
 

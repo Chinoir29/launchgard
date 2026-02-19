@@ -19,8 +19,8 @@ The ARCHI-Ω framework team takes security issues seriously. We appreciate your 
 
 Instead, please report security vulnerabilities by:
 
-1. **Email**: Send details to the repository maintainer at [security contact to be added]
-2. **GitHub Security Advisory**: Use the "Security" tab in the repository to create a private security advisory
+1. **Email**: Send details to the repository maintainer (contact information available in repository settings or create a private security advisory)
+2. **GitHub Security Advisory**: Use the "Security" tab in the repository to create a private security advisory (recommended)
 
 ### What to Include
 

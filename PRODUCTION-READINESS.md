@@ -393,4 +393,4 @@ Le framework ARCHI-Ω v1.2 est un produit complet, sécurisé, et professionnel 
 **Version:** ARCHI-Ω v1.2.0  
 **Status:** ✅ PRODUCTION READY - PRÊT POUR COMMERCIALISATION
 
-**Contact:** [À définir pour support commercial]
+**Support:** For commercial inquiries, support, or licensing questions, please use GitHub Issues or contact the repository maintainers through GitHub.
